@@ -36,14 +36,17 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
             </div>
         </header>
 
-        <div class="progress-wrap" id="rv-progress-wrap">
+        <div class="progress-wrap" id="rv-progress-wrap" hidden>
             <div class="bar" aria-hidden="true"><span id="rv-bar"></span></div>
             <p class="progress" id="rv-progress">Étape 1 sur 5</p>
         </div>
 
         <main id="contenu">
+            <section class="start" id="rv-start">
+                <button type="button" class="btn btn-start" id="rv-start-btn">Faire un signalement</button>
+            </section>
             <div class="error" id="rv-error" role="alert" hidden></div>
-            <form id="rv-form" autocomplete="off" novalidate>
+            <form id="rv-form" autocomplete="off" novalidate hidden>
                 <input type="hidden" name="nonce" value="<?php echo esc_attr($rv_nonce); ?>">
                 <input type="hidden" name="lat" id="rv-lat" value="">
                 <input type="hidden" name="lng" id="rv-lng" value="">
@@ -117,14 +120,14 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                     1 => [
                         'step'  => 4,
                         'title' => 'Photo 1',
-                        'lead'  => 'Prenez une photo de l’animal.',
-                        'more'  => 'Utilisez l’appareil photo. Pas les anciennes photos.',
+                        'lead'  => 'Une photo est obligatoire.',
+                        'more'  => 'Prenez-la avec l’appareil photo, ou choisissez-en une déjà sur l’appareil.',
                     ],
                     2 => [
                         'step'  => 5,
                         'title' => 'Photo 2',
-                        'lead'  => 'Vous pouvez prendre une autre photo.',
-                        'more'  => 'Ce n’est pas obligatoire. Montrez l’animal d’un autre côté.',
+                        'lead'  => 'Vous pouvez ajouter une autre photo.',
+                        'more'  => 'Ce n’est pas obligatoire. Prenez-la, ou choisissez-en une déjà sur l’appareil.',
                     ],
                 ];
                 foreach ($rv_photo_steps as $rv_index => $rv_photo) :
@@ -142,16 +145,20 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                                 <li>Touchez Appareil photo.</li>
                                 <li>Choisissez Autoriser.</li>
                                 <li>Revenez ici.</li>
-                                <li>Touchez « Ouvrir l’appareil photo ».</li>
+                                <li>Touchez « Prendre une photo ».</li>
                             </ol>
                         </div>
                         <div class="preview" data-preview="<?php echo (int) $rv_index; ?>" hidden>
                             <img alt="Aperçu de la photo <?php echo (int) $rv_index; ?>">
-                            <button type="button" class="btn btn-ghost" data-retake="<?php echo (int) $rv_index; ?>">Reprendre la photo</button>
+                            <button type="button" class="btn btn-ghost" data-retake="<?php echo (int) $rv_index; ?>">Changer la photo</button>
                         </div>
-                        <button type="button" class="btn" data-open-camera="<?php echo (int) $rv_index; ?>">Ouvrir l’appareil photo</button>
+                        <div class="photo-choices" data-photo-choices="<?php echo (int) $rv_index; ?>">
+                            <button type="button" class="btn" data-open-camera="<?php echo (int) $rv_index; ?>">Prendre une photo</button>
+                            <button type="button" class="btn btn-ghost" data-pick="<?php echo (int) $rv_index; ?>">Choisir une photo</button>
+                        </div>
                         <button type="button" class="btn btn-ghost" data-fallback="<?php echo (int) $rv_index; ?>" hidden>Appareil photo du téléphone</button>
-                        <input type="file" accept="image/*" capture="environment" data-file="<?php echo (int) $rv_index; ?>" hidden>
+                        <input type="file" accept="image/*" data-file="<?php echo (int) $rv_index; ?>" hidden>
+                        <input type="file" accept="image/*" capture="environment" data-capture="<?php echo (int) $rv_index; ?>" hidden>
                         <div class="actions">
                             <button type="button" class="btn" data-next>Continuer</button>
                             <button type="button" class="btn btn-ghost" data-back>Retour</button>
@@ -189,7 +196,7 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
             </section>
         </main>
 
-        <p class="fine">Nous gardons le lieu, l’animal et les photos.</p>
+        <p class="fine" hidden>Nous gardons le lieu, l’animal et les photos.</p>
     </div>
 
     <div class="camera" id="rv-camera" hidden>

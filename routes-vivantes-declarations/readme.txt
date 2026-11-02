@@ -3,7 +3,7 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ Formulaire public pour déclarer un animal mort ou blessé, et carte des signale
 
 Le plugin ajoute deux pages indépendantes du thème WordPress.
 
-* `/routesvivantes/` — formulaire en français facile à lire. Il commence par l’état de l’animal. Le lieu n’est demandé que si le téléphone ne l’a pas déjà autorisé. Ensuite : type d’animal, une photo obligatoire et une deuxième photo facultative, mot libre.
+* `/routesvivantes/` — formulaire en français facile à lire. Il s’ouvre sur le bouton « Faire un signalement ». Ensuite : l’état de l’animal. Le lieu n’est demandé qu’après ce bouton, et seulement si le téléphone ne l’a pas déjà autorisé. Puis : type d’animal, une photo obligatoire et une deuxième photo facultative (appareil photo ou image déjà sur l’appareil), mot libre.
 * `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point. Un clic ouvre la fiche. Le seul filtre est une période.
 
 La carte, le JSON et les photos sont réservés aux comptes qui ont la capacité `manage_options`.
@@ -34,11 +34,13 @@ La désactivation ne supprime ni la table ni les photos. Elle retire seulement l
 
 == Formulaire public ==
 
-Le visiteur n’a pas besoin de compte. La première question est : l’animal est mort ou blessé. Le lieu est lu tout de suite si le téléphone l’autorise déjà. Sinon, une question simple demande de l’autoriser. L’envoi reste bloqué tant que la position manque.
+Le visiteur n’a pas besoin de compte. La page s’ouvre sur le bouton « Faire un signalement ». Ce bouton lance le signalement. La première question est : l’animal est mort ou blessé. Le lieu n’est pas demandé au départ. Il est lu tout de suite si le téléphone l’autorise déjà. Sinon, une question simple demande de l’autoriser. L’envoi reste bloqué tant que la position manque.
 
 L’envoi vérifie un nonce, la taille des photos (8 Mo chacune) et un plafond de 8 signalements par heure et par adresse IP. L’adresse IP n’est pas enregistrée : seul un compteur temporaire est utilisé.
 
 Champs enregistrés : date, état (`mort` ou `blessé`), animal, remarque, latitude, longitude, chemin de la photo 1. La photo 2 est enregistrée seulement si elle a été prise.
+
+Pour chaque photo, vous avez deux choix : la prendre avec l’appareil photo, ou choisir une image déjà sur l’appareil. Seules les images sont acceptées. La première photo reste obligatoire. La deuxième reste facultative.
 
 Animaux proposés : hérisson, renard, blaireau, chevreuil, sanglier, oiseau, chouette, crapaud, lapin, lièvre, écureuil, fouine, ragondin, chat, autre.
 
@@ -72,7 +74,7 @@ Adresse du fichier :
 
 `https://raw.githubusercontent.com/jpilette/routesvivantes/cursor/routes-vivantes-declarations-e73d/routes-vivantes-declarations/update.json`
 
-Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.4.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
+Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.6.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
 
 Pour publier une version :
 
@@ -86,6 +88,10 @@ Une installation restée en 1.1.0 appelle encore l’API GitHub. Vous installez 
 La bibliothèque est chargée dans l’administration WordPress, dans WP-CLI, dans le cron, et dans la requête qui installe la mise à jour. Les pages `/routesvivantes/` et `/routesvivantes/admin/`, ainsi que l’envoi du formulaire, ne la chargent pas.
 
 == Changelog ==
+
+= 1.6.0 =
+* Pour chaque photo, vous pouvez la prendre avec l’appareil photo ou en choisir une déjà sur l’appareil. La première reste obligatoire. La deuxième reste facultative.
+* La page s’ouvre sur le bouton « Faire un signalement ». Le lieu n’est demandé qu’ensuite, et seulement s’il n’est pas déjà autorisé.
 
 = 1.4.0 =
 * La recherche de mise à jour lit un fichier public. Elle n’appelle plus l’API GitHub.

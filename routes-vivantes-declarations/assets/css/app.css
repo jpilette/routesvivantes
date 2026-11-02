@@ -39,6 +39,20 @@ body.page-form {
     text-transform: uppercase;
 }
 
+.start {
+    display: flex;
+    align-items: center;
+    min-height: calc(100dvh - 168px);
+    padding: 24px 20px 48px;
+}
+
+.btn-start {
+    min-height: 128px;
+    padding: 28px 24px;
+    font-size: 1.7rem;
+    line-height: 1.2;
+}
+
 .step,
 .success {
     padding: 18px 20px 8px;
@@ -210,6 +224,12 @@ textarea {
 
 .preview .btn {
     margin-top: 10px;
+}
+
+.photo-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .fine {

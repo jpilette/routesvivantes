@@ -444,7 +444,14 @@
         var box = document.querySelector('[data-preview="' + index + '"]');
         box.querySelector('img').src = url;
         box.hidden = false;
-        document.querySelector('[data-open-camera="' + index + '"]').hidden = true;
+        var choices = document.querySelector('[data-photo-choices="' + index + '"]');
+        if (choices) {
+            choices.hidden = true;
+        }
+        var fallback = document.querySelector('[data-fallback="' + index + '"]');
+        if (fallback) {
+            fallback.hidden = true;
+        }
         var help = document.querySelector('[data-photo="' + index + '"] [data-camera-help]');
         if (help) {
             help.hidden = true;
@@ -514,13 +521,17 @@
 
     document.querySelectorAll('[data-retake]').forEach(function (button) {
         button.addEventListener('click', function () {
-            openCamera(button.getAttribute('data-retake'));
+            var index = button.getAttribute('data-retake');
+            var choices = document.querySelector('[data-photo-choices="' + index + '"]');
+            if (choices) {
+                choices.hidden = false;
+            }
         });
     });
 
-    document.querySelectorAll('[data-fallback]').forEach(function (button) {
+    document.querySelectorAll('[data-pick]').forEach(function (button) {
         button.addEventListener('click', function () {
-            var index = button.getAttribute('data-fallback');
+            var index = button.getAttribute('data-pick');
             var input = document.querySelector('[data-file="' + index + '"]');
             if (input) {
                 input.click();
@@ -528,14 +539,28 @@
         });
     });
 
-    document.querySelectorAll('[data-file]').forEach(function (input) {
+    document.querySelectorAll('[data-fallback]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var index = button.getAttribute('data-fallback');
+            var input = document.querySelector('[data-capture="' + index + '"]');
+            if (input) {
+                input.click();
+            }
+        });
+    });
+
+    document.querySelectorAll('[data-file], [data-capture]').forEach(function (input) {
         input.addEventListener('change', function () {
             var file = input.files && input.files[0];
             input.value = '';
             if (!file) {
                 return;
             }
-            var index = input.getAttribute('data-file');
+            if (file.type && file.type.indexOf('image/') !== 0) {
+                showError('Choisissez une image.');
+                return;
+            }
+            var index = input.getAttribute('data-file') || input.getAttribute('data-capture');
             var url = URL.createObjectURL(file);
             var image = new Image();
             image.onload = function () {
@@ -550,7 +575,7 @@
             };
             image.onerror = function () {
                 URL.revokeObjectURL(url);
-                showError('Cette photo n’est pas lisible. Reprenez-la avec l’appareil photo.');
+                showError('Cette photo n’est pas lisible. Choisissez-en une autre.');
             };
             image.src = url;
         });
@@ -687,6 +712,17 @@
         window.location.reload();
     });
 
-    ensurePermission();
-    go(0, false);
+    var start = document.getElementById('rv-start');
+    var progressWrap = document.getElementById('rv-progress-wrap');
+    var fine = document.querySelector('.fine');
+    document.getElementById('rv-start-btn').addEventListener('click', function () {
+        start.hidden = true;
+        form.hidden = false;
+        progressWrap.hidden = false;
+        if (fine) {
+            fine.hidden = false;
+        }
+        ensurePermission();
+        go(0);
+    });
 }());
