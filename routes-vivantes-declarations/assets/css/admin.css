@@ -59,16 +59,8 @@ body.page-map {
     width: 18px;
     height: 18px;
     border: 2px solid var(--forest);
-}
-
-.swatch-dead {
     border-radius: 50%;
     background: var(--green);
-}
-
-.swatch-hurt {
-    border-radius: 4px;
-    background: var(--gold);
 }
 
 .count {
@@ -101,17 +93,9 @@ body.page-map {
     height: 22px;
     margin: 7px;
     border: 3px solid var(--cream);
-    box-shadow: 0 0 0 2px var(--forest), 0 2px 6px rgba(15, 34, 25, 0.45);
-}
-
-.pin-dead {
     border-radius: 50%;
     background: var(--green);
-}
-
-.pin-hurt {
-    border-radius: 5px;
-    background: var(--gold);
+    box-shadow: 0 0 0 2px var(--forest), 0 2px 6px rgba(15, 34, 25, 0.45);
 }
 
 .scrim {

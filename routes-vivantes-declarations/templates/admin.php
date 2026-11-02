@@ -53,10 +53,8 @@ $rv_json = home_url('/routesvivantes/admin/donnees/');
         </form>
 
         <p class="legend">
-            <span class="swatch swatch-dead" aria-hidden="true"></span>
-            Rond vert : mort.
-            <span class="swatch swatch-hurt" aria-hidden="true"></span>
-            Carré or : blessé.
+            <span class="swatch" aria-hidden="true"></span>
+            Chaque point est un signalement. Mort ou blessé est indiqué dans la fiche.
         </p>
         <p class="count" id="rv-count" role="status">Chargement des signalements.</p>
         <p class="legend">Pour déplacer un lieu, ouvrez le menu Routes Vivantes dans l’administration WordPress.</p>

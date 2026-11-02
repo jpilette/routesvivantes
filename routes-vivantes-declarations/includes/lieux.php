@@ -75,10 +75,31 @@ function rv_decl_render_lieux_screen(): void {
     }
 
     $rows = rv_decl_query_declarations(null, null);
+    $added = isset($_GET['rv_examples']) ? absint(wp_unslash($_GET['rv_examples'])) : 0;
+    $seed_failed = isset($_GET['rv_examples_error']);
     ?>
     <div class="wrap" id="rv-lieux" data-ajax="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('rv_decl_move')); ?>">
         <h1>Lieux des signalements</h1>
+        <?php if ($added > 0) : ?>
+            <div class="notice notice-success is-dismissible">
+                <p><?php echo esc_html(sprintf('%d signalements d’exemple ont été ajoutés. Aucun signalement déjà présent n’a été retiré.', $added)); ?></p>
+            </div>
+        <?php endif; ?>
+        <?php if ($seed_failed) : ?>
+            <div class="notice notice-error">
+                <p>Les exemples n’ont pas été ajoutés. Réessayez.</p>
+            </div>
+        <?php endif; ?>
         <p>Choisissez un signalement. Déplacez le point sur la carte, puis enregistrez le lieu.</p>
+        <section class="rv-examples" aria-labelledby="rv-examples-title">
+            <h2 id="rv-examples-title">Signalements d’exemple</h2>
+            <p>Ce bouton ajoute 100 signalements d’exemple, répartis en France, avec des photos créées pour l’essai. Il ne s’exécute que lorsque vous le demandez. Il ne retire pas les signalements déjà enregistrés. Vous pouvez le refaire : cela ajoute encore des exemples.</p>
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <?php wp_nonce_field('rv_decl_seed_examples'); ?>
+                <input type="hidden" name="action" value="rv_decl_seed_examples">
+                <button type="submit" class="button">Ajouter 100 signalements d’exemple</button>
+            </form>
+        </section>
         <?php if (!$rows) : ?>
             <p>Aucun signalement pour le moment.</p>
         <?php else : ?>

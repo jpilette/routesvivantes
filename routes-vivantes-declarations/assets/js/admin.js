@@ -44,11 +44,10 @@
         fitPasses += 1;
     }
 
-    function iconFor(status) {
-        var kind = status === 'blessé' ? 'pin pin-hurt' : 'pin pin-dead';
+    function markerIcon() {
         return L.divIcon({
             className: 'pin-wrap',
-            html: '<span class="' + kind + '"></span>',
+            html: '<span class="pin"></span>',
             iconSize: [36, 36],
             iconAnchor: [18, 18]
         });
@@ -161,7 +160,7 @@
             var key = String(item.id);
             var title = (item.animal_label || 'Animal') + ', ' + (item.status_label || '');
             var marker = L.marker([lat, lng], {
-                icon: iconFor(item.status),
+                icon: markerIcon(),
                 keyboard: true,
                 title: title
             });
