@@ -1,0 +1,15 @@
+{
+  "name": "Routes Vivantes — Déclarations",
+  "slug": "routes-vivantes-declarations",
+  "version": "1.4.0",
+  "download_url": "https://github.com/jpilette/routesvivantes/releases/download/v1.4.0/routes-vivantes-declarations.zip",
+  "homepage": "https://www.routesvivantes.fr/",
+  "requires": "6.0",
+  "tested": "7.1",
+  "requires_php": "7.4",
+  "author": "Routes Vivantes",
+  "sections": {
+    "description": "Formulaire public pour déclarer un animal mort ou blessé, et carte des signalements pour les administrateurs.",
+    "changelog": "<p>1.4.0 — La recherche de mise à jour lit un fichier public. Elle n’appelle plus l’API GitHub. Depuis la liste des extensions, vous installez la dernière version publiée.</p>"
+  }
+}

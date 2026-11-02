@@ -3,7 +3,7 @@
  * Plugin Name:       Routes Vivantes — Déclarations
  * Plugin URI:        https://www.routesvivantes.fr/
  * Description:       Formulaire public pour déclarer un animal mort ou blessé (/routesvivantes/) et carte des signalements pour les administrateurs (/routesvivantes/admin/).
- * Version:           1.3.0
+ * Version:           1.4.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Routes Vivantes
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RV_DECL_VERSION', '1.3.0');
+define('RV_DECL_VERSION', '1.4.0');
 define('RV_DECL_DB_VERSION', '1');
 define('RV_DECL_FILE', __FILE__);
 define('RV_DECL_DIR', plugin_dir_path(__FILE__));
@@ -57,8 +57,10 @@ add_action('wp_ajax_nopriv_rv_decl_submit', 'rv_decl_handle_submit');
 add_action('wp_ajax_rv_decl_delete', 'rv_decl_handle_delete');
 
 /**
- * La bibliothèque de mise à jour parle au dépôt GitHub et accroche
- * l’administration. Les pages publiques ne la chargent pas.
+ * La bibliothèque de mise à jour parle au dépôt GitHub.
+ * Elle est chargée dans l’administration, le cron, WP-CLI,
+ * et pendant la requête qui installe la mise à jour.
+ * Les pages publiques et l’envoi du formulaire ne la chargent pas.
  */
 function rv_decl_should_load_updater() {
     if (function_exists('wp_doing_cron') && wp_doing_cron()) {
@@ -67,10 +69,27 @@ function rv_decl_should_load_updater() {
     if (defined('WP_CLI') && WP_CLI) {
         return true;
     }
-    if (is_admin() && !(function_exists('wp_doing_ajax') && wp_doing_ajax())) {
-        return true;
+    if (!is_admin()) {
+        return false;
     }
-    return false;
+    if (function_exists('wp_doing_ajax') && wp_doing_ajax()) {
+        return rv_decl_is_plugin_update_request();
+    }
+    return true;
+}
+
+/**
+ * WordPress installe la mise à jour dans admin-ajax.php, action update-plugin.
+ * Cette requête relit les mises à jour sans la bibliothèque si on ne la charge
+ * pas ici : la release disparaît, et WordPress répond que l’extension est à jour.
+ *
+ * @return bool
+ */
+function rv_decl_is_plugin_update_request() {
+    if (!isset($_REQUEST['action']) || !is_string($_REQUEST['action'])) {
+        return false;
+    }
+    return sanitize_key(wp_unslash($_REQUEST['action'])) === 'update-plugin';
 }
 
 if (rv_decl_should_load_updater()) {

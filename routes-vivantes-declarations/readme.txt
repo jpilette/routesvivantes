@@ -3,7 +3,7 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,32 +66,30 @@ La carte s’ouvre cadrée sur la France métropolitaine.
 
 == Mise à jour ==
 
-Le plugin cherche lui-même une version plus récente sur le dépôt public `https://github.com/jpilette/routesvivantes`. Aucun jeton n’est demandé.
+Le plugin cherche une version plus récente dans un fichier JSON public. Aucun jeton n’est demandé. Il n’appelle pas l’API GitHub (`api.github.com`) : un refus 403 de cette API ne bloque plus la recherche.
 
-La vérification suit cet ordre :
+Adresse du fichier :
 
-1. la dernière release GitHub (les préversions sont ignorées) ;
-2. le tag dont le numéro est le plus élevé ;
-3. la branche `main`, si aucune release ni aucun tag ne convient.
+`https://raw.githubusercontent.com/jpilette/routesvivantes/cursor/routes-vivantes-declarations-e73d/routes-vivantes-declarations/update.json`
 
-Dès qu’une release ou un tag existe, la branche n’est plus consultée. Pour qu’une version sur `main` soit proposée, il faut une nouvelle release ou un nouveau tag, ou bien ne pas en avoir du tout.
+Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.4.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
 
 Pour publier une version :
 
-1. Monter l’en-tête `Version` dans `routes-vivantes-declarations.php` et `Stable tag` dans ce fichier. Les deux portent le même numéro, par exemple `1.2.0`.
-2. Fusionner ce changement dans la branche `main`.
+1. Monter l’en-tête `Version`, le `Stable tag` de ce fichier, et le champ `version` de `update.json`. Les trois portent le même numéro.
+2. Mettre dans `download_url` l’adresse exacte du zip de cette version.
+3. Pousser la branche qui contient `update.json`. Ne pas réécrire `main`.
+4. Créer une release GitHub, pas une préversion. Le tag s’appelle `vX.Y.Z`. Joindre `routes-vivantes-declarations.zip`.
 
-Puis l’une de ces trois voies :
+Une installation restée en 1.1.0 appelle encore l’API GitHub. Vous installez ce zip une fois par Extensions → Ajouter. Ensuite, les versions suivantes s’installent depuis la liste des extensions.
 
-* **Release.** Créer une release GitHub, pas une préversion. Le tag s’appelle `v1.2.0` ou `1.2.0`. Joindre `routes-vivantes-declarations.zip` : ce zip contient seulement le dossier du plugin, afin que WordPress puisse l’installer. S’il est présent, c’est ce fichier qui est téléchargé.
-* **Tag.** Poser le tag `v1.2.0` ou `1.2.0` sur `main`, sans créer de release. Le numéro du tag est la version annoncée, puis l’en-tête `Version` du tag la remplace s’il est lisible.
-* **Branche.** Pousser l’en-tête `Version` sur `main`, sans tag ni release. Le vérificateur lit cet en-tête.
-
-L’archive automatique de GitHub enveloppe tout le dépôt. À l’installation, seul le dossier `routes-vivantes-declarations` est conservé. Le zip joint à la release évite ce détour.
-
-La bibliothèque n’est chargée que dans l’administration WordPress, dans WP-CLI et dans le cron. Les pages `/routesvivantes/` et `/routesvivantes/admin/` ne la chargent pas.
+La bibliothèque est chargée dans l’administration WordPress, dans WP-CLI, dans le cron, et dans la requête qui installe la mise à jour. Les pages `/routesvivantes/` et `/routesvivantes/admin/`, ainsi que l’envoi du formulaire, ne la chargent pas.
 
 == Changelog ==
+
+= 1.4.0 =
+* La recherche de mise à jour lit un fichier public. Elle n’appelle plus l’API GitHub.
+* La mise à jour lancée depuis la liste des extensions installe la dernière version publiée.
 
 = 1.3.0 =
 * Une seule photo est obligatoire. La deuxième est facultative.
