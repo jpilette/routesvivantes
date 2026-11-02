@@ -38,7 +38,7 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
 
         <div class="progress-wrap" id="rv-progress-wrap">
             <div class="bar" aria-hidden="true"><span id="rv-bar"></span></div>
-            <p class="progress" id="rv-progress">Étape 1 sur 6</p>
+            <p class="progress" id="rv-progress">Étape 1 sur 5</p>
         </div>
 
         <main id="contenu">
@@ -48,33 +48,8 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                 <input type="hidden" name="lat" id="rv-lat" value="">
                 <input type="hidden" name="lng" id="rv-lng" value="">
 
-                <section class="step" data-step="1" aria-labelledby="rv-title-1">
-                    <h2 id="rv-title-1" tabindex="-1">Où est l’animal ?</h2>
-                    <p>Un animal est mort ou blessé sur la route.</p>
-                    <p>D’abord, le lieu. Touchez le bouton. Le téléphone va demander la position.</p>
-                    <div class="geo" id="rv-geo" data-geo="waiting" role="status" aria-live="polite">
-                        <p class="geo-label">Lieu : <strong id="rv-geo-label">En attente</strong></p>
-                        <p id="rv-geo-text">Le lieu n’est pas encore demandé.</p>
-                        <div class="help" id="rv-geo-help" hidden>
-                            <p>Sans le lieu, l’envoi est bloqué.</p>
-                            <p>Pour autoriser le lieu :</p>
-                            <ol>
-                                <li>Ouvrez les réglages du téléphone.</li>
-                                <li>Ouvrez le navigateur. Safari ou Chrome.</li>
-                                <li>Touchez Position.</li>
-                                <li>Choisissez Autoriser.</li>
-                                <li>Revenez sur cette page.</li>
-                                <li>Touchez « Réessayer le lieu ».</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button type="button" class="btn" id="rv-geo-action">Autoriser le lieu</button>
-                    </div>
-                </section>
-
-                <section class="step" data-step="2" hidden aria-labelledby="rv-title-2">
-                    <h2 id="rv-title-2" tabindex="-1">L’animal est comment ?</h2>
+                <section class="step" data-part="etat" data-step="1" aria-labelledby="rv-title-1">
+                    <h2 id="rv-title-1" tabindex="-1">L’animal est comment ?</h2>
                     <p>Choisissez une seule réponse.</p>
                     <div class="choices-stack">
                         <label class="choice">
@@ -90,11 +65,36 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                     </div>
                     <div class="actions">
                         <button type="button" class="btn" data-next>Continuer</button>
+                    </div>
+                </section>
+
+                <section class="step" data-part="lieu" data-step="2" hidden aria-labelledby="rv-title-2">
+                    <h2 id="rv-title-2" tabindex="-1">Autorisez le lieu</h2>
+                    <p>Nous avons besoin du lieu.</p>
+                    <p>Touchez le bouton. Puis choisissez Autoriser.</p>
+                    <div class="geo" id="rv-geo" data-geo="waiting" role="status" aria-live="polite">
+                        <p class="geo-label">Lieu : <strong id="rv-geo-label">En attente</strong></p>
+                        <p id="rv-geo-text">Le lieu n’est pas encore noté.</p>
+                        <div class="help" id="rv-geo-help" hidden>
+                            <p>Sans le lieu, l’envoi est bloqué.</p>
+                            <p>Pour autoriser le lieu :</p>
+                            <ol>
+                                <li>Ouvrez les réglages du téléphone.</li>
+                                <li>Ouvrez le navigateur. Safari ou Chrome.</li>
+                                <li>Touchez Position.</li>
+                                <li>Choisissez Autoriser.</li>
+                                <li>Revenez sur cette page.</li>
+                                <li>Touchez « Réessayer le lieu ».</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button type="button" class="btn" id="rv-geo-action">Autoriser le lieu</button>
                         <button type="button" class="btn btn-ghost" data-back>Retour</button>
                     </div>
                 </section>
 
-                <section class="step" data-step="3" hidden aria-labelledby="rv-title-3">
+                <section class="step" data-part="animal" data-step="3" hidden aria-labelledby="rv-title-3">
                     <h2 id="rv-title-3" tabindex="-1">Quel animal ?</h2>
                     <p>Choisissez un seul animal.</p>
                     <div class="animals">
@@ -129,7 +129,7 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                 ];
                 foreach ($rv_photo_steps as $rv_index => $rv_photo) :
                     ?>
-                    <section class="step" data-step="<?php echo (int) $rv_photo['step']; ?>" data-photo="<?php echo (int) $rv_index; ?>" hidden aria-labelledby="rv-title-<?php echo (int) $rv_photo['step']; ?>">
+                    <section class="step" data-part="photo" data-step="<?php echo (int) $rv_photo['step']; ?>" data-photo="<?php echo (int) $rv_index; ?>" hidden aria-labelledby="rv-title-<?php echo (int) $rv_photo['step']; ?>">
                         <h2 id="rv-title-<?php echo (int) $rv_photo['step']; ?>" tabindex="-1"><?php echo esc_html($rv_photo['title']); ?></h2>
                         <p><?php echo esc_html($rv_photo['lead']); ?></p>
                         <p><?php echo esc_html($rv_photo['more']); ?></p>
@@ -159,13 +159,14 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                     </section>
                 <?php endforeach; ?>
 
-                <section class="step" data-step="6" hidden aria-labelledby="rv-title-6">
+                <section class="step" data-part="mot" data-step="6" hidden aria-labelledby="rv-title-6">
                     <h2 id="rv-title-6" tabindex="-1">Un mot en plus ?</h2>
                     <p id="rv-remark-help">Ce n’est pas obligatoire. 500 signes maximum.</p>
                     <p class="example">Exemple : près du fossé.</p>
                     <label class="field-label" for="rv-remark">Votre mot</label>
                     <textarea id="rv-remark" name="remark" maxlength="500" rows="4" aria-describedby="rv-remark-help"></textarea>
                     <p class="recap" id="rv-recap"></p>
+                    <p id="rv-lieu-wait" hidden>Nous notons le lieu. Patientez.</p>
                     <div class="actions">
                         <button type="submit" class="btn" id="rv-submit">Envoyer le signalement</button>
                         <button type="button" class="btn btn-ghost" data-back>Retour</button>

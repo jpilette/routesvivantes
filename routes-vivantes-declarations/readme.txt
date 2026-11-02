@@ -3,7 +3,7 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ Formulaire public pour déclarer un animal mort ou blessé, et carte des signale
 
 Le plugin ajoute deux pages indépendantes du thème WordPress.
 
-* `/routesvivantes/` — formulaire en français facile à lire. Lieu du téléphone, deux photos prises avec l’appareil photo, type d’animal, mot libre, mort ou blessé.
+* `/routesvivantes/` — formulaire en français facile à lire. Il commence par l’état de l’animal. Le lieu n’est demandé que si le téléphone ne l’a pas déjà autorisé. Ensuite : type d’animal, deux photos prises avec l’appareil photo, mot libre.
 * `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point. Un clic ouvre la fiche. Le seul filtre est une période.
 
 La carte, le JSON et les photos sont réservés aux comptes qui ont la capacité `manage_options`.
@@ -34,7 +34,9 @@ La désactivation ne supprime ni la table ni les photos. Elle retire seulement l
 
 == Formulaire public ==
 
-Le visiteur n’a pas besoin de compte. L’envoi vérifie un nonce, la taille des photos (8 Mo chacune) et un plafond de 8 signalements par heure et par adresse IP. L’adresse IP n’est pas enregistrée : seul un compteur temporaire est utilisé.
+Le visiteur n’a pas besoin de compte. La première question est : l’animal est mort ou blessé. Le lieu est lu tout de suite si le téléphone l’autorise déjà. Sinon, une question simple demande de l’autoriser. L’envoi reste bloqué tant que la position manque.
+
+L’envoi vérifie un nonce, la taille des photos (8 Mo chacune) et un plafond de 8 signalements par heure et par adresse IP. L’adresse IP n’est pas enregistrée : seul un compteur temporaire est utilisé.
 
 Champs enregistrés : date, état (`mort` ou `blessé`), animal, remarque, latitude, longitude, chemins des deux photos.
 
@@ -88,6 +90,10 @@ L’archive automatique de GitHub enveloppe tout le dépôt. À l’installation
 La bibliothèque n’est chargée que dans l’administration WordPress, dans WP-CLI et dans le cron. Les pages `/routesvivantes/` et `/routesvivantes/admin/` ne la chargent pas.
 
 == Changelog ==
+
+= 1.2.0 =
+* Le formulaire commence par le signalement. Le lieu n’est demandé que s’il n’est pas déjà autorisé.
+* Les textes du formulaire, de la carte et des messages s’adressent à vous.
 
 = 1.1.0 =
 * Mise à jour automatique depuis le dépôt GitHub public.

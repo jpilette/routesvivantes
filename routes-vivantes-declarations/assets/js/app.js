@@ -7,10 +7,13 @@
     }
 
     var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
-    var current = 0;
+    var cursor = 0;
     var photos = { 1: null, 2: null };
     var geoState = 'waiting';
     var geoPending = false;
+    var geoFailed = false;
+    var permissionState = 'pending';
+    var permissionPromise = null;
     var captureIndex = 1;
     var stream = null;
     var sending = false;
@@ -25,6 +28,7 @@
     var geoButton = document.getElementById('rv-geo-action');
     var latInput = document.getElementById('rv-lat');
     var lngInput = document.getElementById('rv-lng');
+    var lieuWait = document.getElementById('rv-lieu-wait');
     var video = document.getElementById('rv-video');
     var camera = document.getElementById('rv-camera');
     var shutter = document.getElementById('rv-shutter');
@@ -40,24 +44,144 @@
         errorBox.textContent = '';
     }
 
-    function go(index, shouldFocus) {
-        current = index;
-        steps.forEach(function (step, stepIndex) {
-            step.hidden = stepIndex !== index;
+    function hasFix() {
+        var lat = parseFloat(latInput.value);
+        var lng = parseFloat(lngInput.value);
+        if (!isFinite(lat) || !isFinite(lng)) {
+            return false;
+        }
+        if (Math.abs(lat) < 0.0000001 && Math.abs(lng) < 0.0000001) {
+            return false;
+        }
+        return true;
+    }
+
+    function clearFix() {
+        latInput.value = '';
+        lngInput.value = '';
+    }
+
+    function shouldShowGeoStep() {
+        if (hasFix()) {
+            return false;
+        }
+        if (permissionState === 'pending') {
+            return false;
+        }
+        if (permissionState === 'granted' && !geoFailed) {
+            return false;
+        }
+        return true;
+    }
+
+    function route() {
+        return steps.filter(function (step) {
+            return step.getAttribute('data-part') !== 'lieu' || shouldShowGeoStep();
         });
-        progress.textContent = 'Étape ' + (index + 1) + ' sur ' + steps.length;
-        bar.style.width = (((index + 1) / steps.length) * 100) + '%';
+    }
+
+    function currentStep() {
+        var routeSteps = route();
+        return routeSteps[cursor] || routeSteps[0];
+    }
+
+    function currentPart() {
+        var step = currentStep();
+        return step ? step.getAttribute('data-part') : '';
+    }
+
+    function syncLieuWait() {
+        if (!lieuWait) {
+            return;
+        }
+        lieuWait.hidden = !(currentPart() === 'mot' && !hasFix());
+    }
+
+    function refreshSubmit() {
+        var button = document.getElementById('rv-submit');
+        if (!button) {
+            return;
+        }
+        if (sending) {
+            button.disabled = true;
+            return;
+        }
+        button.disabled = !hasFix();
+    }
+
+    function go(index, shouldFocus) {
+        var routeSteps = route();
+        if (!routeSteps.length) {
+            return;
+        }
+        if (index < 0) {
+            index = 0;
+        }
+        if (index > routeSteps.length - 1) {
+            index = routeSteps.length - 1;
+        }
+        var active = routeSteps[index];
+        if (active.getAttribute('data-part') === 'mot' && !hasFix() && shouldShowGeoStep()) {
+            goToPart('lieu', null, shouldFocus);
+            showError('Le lieu est obligatoire.');
+            return;
+        }
+        cursor = index;
+        steps.forEach(function (step) {
+            step.hidden = step !== active;
+        });
+        progress.textContent = 'Étape ' + (index + 1) + ' sur ' + routeSteps.length;
+        bar.style.width = (((index + 1) / routeSteps.length) * 100) + '%';
         clearError();
-        if (index === steps.length - 1) {
+        if (active.getAttribute('data-part') === 'mot') {
             updateRecap();
         }
+        syncLieuWait();
+        refreshSubmit();
         if (shouldFocus !== false) {
-            var title = steps[index].querySelector('h2');
+            var title = active.querySelector('h2');
             if (title) {
                 title.focus();
             }
             window.scrollTo(0, 0);
         }
+    }
+
+    function goToPart(part, photoIndex, shouldFocus) {
+        var routeSteps = route();
+        var index = 0;
+        var found = false;
+        routeSteps.forEach(function (step, stepIndex) {
+            if (found) {
+                return;
+            }
+            if (step.getAttribute('data-part') !== part) {
+                return;
+            }
+            if (photoIndex && step.getAttribute('data-photo') !== String(photoIndex)) {
+                return;
+            }
+            index = stepIndex;
+            found = true;
+        });
+        go(index, shouldFocus);
+    }
+
+    function stepBy(part, photoIndex) {
+        var found = null;
+        steps.forEach(function (step) {
+            if (found) {
+                return;
+            }
+            if (step.getAttribute('data-part') !== part) {
+                return;
+            }
+            if (photoIndex && step.getAttribute('data-photo') !== String(photoIndex)) {
+                return;
+            }
+            found = step;
+        });
+        return found;
     }
 
     function selected(name) {
@@ -90,6 +214,11 @@
             geoText.textContent = text || 'Le lieu est bien noté.';
             geoButton.disabled = false;
             geoButton.textContent = 'Continuer';
+            refreshSubmit();
+            syncLieuWait();
+            if (hasFix() && currentPart() === 'lieu') {
+                goToPart('animal');
+            }
             return;
         }
         if (state === 'refused') {
@@ -97,33 +226,63 @@
             geoText.textContent = text || 'Le lieu est refusé.';
             geoButton.disabled = false;
             geoButton.textContent = 'Réessayer le lieu';
+            refreshSubmit();
+            syncLieuWait();
             return;
         }
         geoLabel.textContent = 'En attente';
         geoText.textContent = text || 'Nous cherchons le lieu. Patientez.';
         geoButton.disabled = geoPending;
         geoButton.textContent = geoPending ? 'Patientez…' : 'Autoriser le lieu';
+        refreshSubmit();
+        syncLieuWait();
     }
 
-    function requestGeo() {
+    function acceptPosition(position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        if (!isFinite(lat) || !isFinite(lng) || (Math.abs(lat) < 0.0000001 && Math.abs(lng) < 0.0000001)) {
+            return false;
+        }
+        latInput.value = String(lat);
+        lngInput.value = String(lng);
+        geoFailed = false;
+        permissionState = 'granted';
+        geoPending = false;
+        setGeo('ok');
+        return true;
+    }
+
+    function requestGeo(options) {
+        var silent = !!(options && options.silent);
         if (!navigator.geolocation) {
-            latInput.value = '';
-            lngInput.value = '';
+            clearFix();
+            geoFailed = true;
+            geoPending = false;
+            permissionState = 'denied';
             setGeo('refused', 'Ce téléphone ne donne pas le lieu.');
             return;
         }
         geoPending = true;
-        setGeo('waiting', 'Nous cherchons le lieu. Patientez.');
+        geoFailed = false;
+        if (!silent || currentPart() === 'lieu') {
+            setGeo('waiting', 'Nous cherchons le lieu. Patientez.');
+        }
         navigator.geolocation.getCurrentPosition(function (position) {
-            geoPending = false;
-            latInput.value = String(position.coords.latitude);
-            lngInput.value = String(position.coords.longitude);
-            setGeo('ok');
+            if (!acceptPosition(position)) {
+                clearFix();
+                geoFailed = true;
+                geoPending = false;
+                setGeo('waiting', 'Le lieu n’arrive pas. Allez dehors, puis réessayez.');
+                geoButton.disabled = false;
+                geoButton.textContent = 'Réessayer le lieu';
+            }
         }, function (error) {
             geoPending = false;
-            latInput.value = '';
-            lngInput.value = '';
+            clearFix();
+            geoFailed = true;
             if (error && error.code === 1) {
+                permissionState = 'denied';
                 setGeo('refused', 'Le lieu est refusé.');
                 return;
             }
@@ -133,41 +292,100 @@
         }, {
             enableHighAccuracy: true,
             timeout: 20000,
-            maximumAge: 10000
+            maximumAge: 60000
         });
+    }
+
+    function ensurePermission() {
+        if (permissionPromise) {
+            return permissionPromise;
+        }
+        permissionPromise = new Promise(function (resolve) {
+            if (!navigator.permissions || !navigator.permissions.query) {
+                permissionState = 'unknown';
+                resolve('unknown');
+                return;
+            }
+            navigator.permissions.query({ name: 'geolocation' }).then(function (status) {
+                permissionState = status.state;
+                if (status.state === 'granted' && !hasFix() && !geoPending) {
+                    requestGeo({ silent: true });
+                }
+                if (currentPart() === 'etat') {
+                    go(cursor, false);
+                }
+                status.onchange = function () {
+                    permissionState = status.state;
+                    if (status.state === 'granted') {
+                        geoFailed = false;
+                        if (!hasFix() && !geoPending) {
+                            requestGeo({ silent: true });
+                        }
+                    }
+                };
+                resolve(status.state);
+            }).catch(function () {
+                permissionState = 'unknown';
+                resolve('unknown');
+            });
+        });
+        return permissionPromise;
     }
 
     geoButton.addEventListener('click', function () {
         clearError();
-        if (geoState === 'ok' && latInput.value && lngInput.value) {
-            go(1);
+        if (hasFix()) {
+            goToPart('animal');
             return;
         }
         requestGeo();
     });
 
-    function validate(index) {
-        if (index === 0 && (geoState !== 'ok' || !latInput.value || !lngInput.value)) {
-            showError('Le lieu est obligatoire.');
-            return false;
+    function validate(step) {
+        if (!step) {
+            return true;
         }
-        if (index === 1 && (selected('status') !== 'mort' && selected('status') !== 'blessé')) {
+        var part = step.getAttribute('data-part');
+        if (part === 'etat' && selected('status') !== 'mort' && selected('status') !== 'blessé') {
             showError('Dites si l’animal est mort ou blessé.');
             return false;
         }
-        if (index === 2 && !selected('animal_type')) {
+        if (part === 'lieu' && !hasFix()) {
+            showError('Le lieu est obligatoire.');
+            return false;
+        }
+        if (part === 'animal' && !selected('animal_type')) {
             showError('Choisissez un animal de la liste.');
             return false;
         }
-        if (index === 3 && !photos[1]) {
-            showError('La photo 1 est obligatoire.');
-            return false;
-        }
-        if (index === 4 && !photos[2]) {
-            showError('La photo 2 est obligatoire.');
+        if (part === 'photo' && !photos[step.getAttribute('data-photo')]) {
+            showError('La photo ' + step.getAttribute('data-photo') + ' est obligatoire.');
             return false;
         }
         return true;
+    }
+
+    function continueFromEtat() {
+        if (!validate(currentStep())) {
+            return;
+        }
+        var nextButton = currentStep().querySelector('[data-next]');
+        if (nextButton) {
+            nextButton.disabled = true;
+        }
+        ensurePermission().then(function () {
+            if (nextButton) {
+                nextButton.disabled = false;
+            }
+            if (shouldShowGeoStep()) {
+                if (permissionState === 'denied') {
+                    setGeo('refused', 'Le lieu est refusé.');
+                }
+                goToPart('lieu');
+                return;
+            }
+            goToPart('animal');
+        });
     }
 
     form.addEventListener('click', function (event) {
@@ -177,11 +395,15 @@
         var next = event.target.closest('[data-next]');
         var back = event.target.closest('[data-back]');
         if (next) {
-            if (validate(current)) {
-                go(current + 1);
+            if (currentPart() === 'etat') {
+                continueFromEtat();
+                return;
             }
-        } else if (back && current > 0) {
-            go(current - 1);
+            if (validate(currentStep())) {
+                go(cursor + 1);
+            }
+        } else if (back && cursor > 0) {
+            go(cursor - 1);
         }
     });
 
@@ -363,19 +585,40 @@
         if (sending) {
             return;
         }
-        if (current !== steps.length - 1) {
-            if (validate(current)) {
-                go(current + 1);
+        if (currentPart() !== 'mot') {
+            if (currentPart() === 'etat') {
+                continueFromEtat();
+                return;
+            }
+            if (validate(currentStep())) {
+                go(cursor + 1);
             }
             return;
         }
+        var checks = [
+            ['etat'],
+            ['animal'],
+            ['photo', '1'],
+            ['photo', '2']
+        ];
         var index;
-        for (index = 0; index <= 4; index += 1) {
-            if (!validate(index)) {
-                go(index);
-                validate(index);
+        for (index = 0; index < checks.length; index += 1) {
+            var step = stepBy(checks[index][0], checks[index][1]);
+            if (!validate(step)) {
+                goToPart(checks[index][0], checks[index][1]);
+                validate(step);
                 return;
             }
+        }
+        if (!hasFix()) {
+            if (permissionState === 'granted' && !geoFailed) {
+                showError('Nous cherchons le lieu. Patientez.');
+                syncLieuWait();
+                return;
+            }
+            goToPart('lieu');
+            showError('Le lieu est obligatoire.');
+            return;
         }
         var remark = document.getElementById('rv-remark').value || '';
         if (remark.length > 500) {
@@ -417,8 +660,8 @@
                     : 'L’envoi n’a pas marché. Réessayez.';
                 showError(message);
                 sending = false;
-                button.disabled = false;
                 button.textContent = 'Envoyer le signalement';
+                refreshSubmit();
                 return;
             }
             stopStream();
@@ -432,8 +675,8 @@
         }).catch(function () {
             showError('L’envoi n’a pas marché. Vérifiez la connexion, puis réessayez.');
             sending = false;
-            button.disabled = false;
             button.textContent = 'Envoyer le signalement';
+            refreshSubmit();
         });
     });
 
@@ -441,6 +684,6 @@
         window.location.reload();
     });
 
+    ensurePermission();
     go(0, false);
-    setGeo('waiting', 'Le lieu n’est pas encore demandé.');
 }());
