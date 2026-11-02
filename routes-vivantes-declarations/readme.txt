@@ -3,7 +3,7 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,11 +18,11 @@ Le plugin ajoute deux pages indépendantes du thème WordPress.
 
 La carte, le JSON et les photos sont réservés aux comptes qui ont la capacité `manage_options`.
 
-Le code est sous GPL. Le logo de l’association Routes Vivantes reste sa marque. La police Outfit est sous SIL Open Font License (voir `assets/fonts/OFL.txt`). Leaflet 1.9.4 est sous licence BSD à 2 clauses.
+Le code est sous GPL. Le logo de l’association Routes Vivantes reste sa marque. La police Outfit est sous SIL Open Font License (voir `assets/fonts/OFL.txt`). Leaflet 1.9.4 est sous licence BSD à 2 clauses. Plugin Update Checker 5.7 (Yahnis Elsts) est sous licence MIT, dans `plugin-update-checker/`.
 
 == Installation ==
 
-1. Copier le dossier `routes-vivantes-declarations` dans `wp-content/plugins/`.
+1. Copier le dossier `routes-vivantes-declarations` dans `wp-content/plugins/`, ou envoyer le zip de ce dossier dans Extensions → Ajouter.
 2. Dans l’administration WordPress, ouvrir Extensions.
 3. Activer « Routes Vivantes — Déclarations ».
    L’activation crée la table `wp_rv_declarations` (le préfixe peut différer) et enregistre les adresses.
@@ -59,6 +59,41 @@ Un visiteur anonyme est renvoyé vers la connexion WordPress. Un compte connect�
 La période est optionnelle. Vide = tous les signalements. Une seule date borne un seul côté. Les dates suivent le fuseau horaire du site.
 
 La carte s’ouvre cadrée sur la France métropolitaine.
+
+== Mise à jour ==
+
+Le plugin cherche lui-même une version plus récente sur le dépôt public `https://github.com/jpilette/routesvivantes`. Aucun jeton n’est demandé.
+
+La vérification suit cet ordre :
+
+1. la dernière release GitHub (les préversions sont ignorées) ;
+2. le tag dont le numéro est le plus élevé ;
+3. la branche `main`, si aucune release ni aucun tag ne convient.
+
+Dès qu’une release ou un tag existe, la branche n’est plus consultée. Pour qu’une version sur `main` soit proposée, il faut une nouvelle release ou un nouveau tag, ou bien ne pas en avoir du tout.
+
+Pour publier une version :
+
+1. Monter l’en-tête `Version` dans `routes-vivantes-declarations.php` et `Stable tag` dans ce fichier. Les deux portent le même numéro, par exemple `1.2.0`.
+2. Fusionner ce changement dans la branche `main`.
+
+Puis l’une de ces trois voies :
+
+* **Release.** Créer une release GitHub, pas une préversion. Le tag s’appelle `v1.2.0` ou `1.2.0`. Joindre `routes-vivantes-declarations.zip` : ce zip contient seulement le dossier du plugin, afin que WordPress puisse l’installer. S’il est présent, c’est ce fichier qui est téléchargé.
+* **Tag.** Poser le tag `v1.2.0` ou `1.2.0` sur `main`, sans créer de release. Le numéro du tag est la version annoncée, puis l’en-tête `Version` du tag la remplace s’il est lisible.
+* **Branche.** Pousser l’en-tête `Version` sur `main`, sans tag ni release. Le vérificateur lit cet en-tête.
+
+L’archive automatique de GitHub enveloppe tout le dépôt. À l’installation, seul le dossier `routes-vivantes-declarations` est conservé. Le zip joint à la release évite ce détour.
+
+La bibliothèque n’est chargée que dans l’administration WordPress, dans WP-CLI et dans le cron. Les pages `/routesvivantes/` et `/routesvivantes/admin/` ne la chargent pas.
+
+== Changelog ==
+
+= 1.1.0 =
+* Mise à jour automatique depuis le dépôt GitHub public.
+
+= 1.0.0 =
+* Formulaire public et carte des signalements.
 
 == Notes ==
 
