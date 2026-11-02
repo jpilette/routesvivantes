@@ -194,54 +194,6 @@ body.page-map {
     overflow-wrap: anywhere;
 }
 
-.detail-move {
-    margin-top: 16px;
-}
-
-.move-title {
-    margin-bottom: 4px;
-    font-size: 1.25rem;
-    font-weight: 700;
-}
-
-#rv-move-map {
-    height: 220px;
-    margin: 12px 0;
-    border-radius: 16px;
-    background: var(--sand);
-    overflow: hidden;
-}
-
-.move-pin {
-    display: block;
-    box-sizing: border-box;
-    width: 28px;
-    height: 28px;
-    margin: 4px;
-    border: 3px solid var(--cream);
-    border-radius: 50%;
-    background: var(--forest);
-    box-shadow: 0 0 0 2px var(--gold), 0 2px 6px rgba(15, 34, 25, 0.45);
-    cursor: grab;
-}
-
-.leaflet-dragging .move-pin {
-    cursor: grabbing;
-}
-
-.move-status {
-    margin-top: 10px;
-    font-weight: 700;
-}
-
-.move-status.is-ok {
-    color: var(--forest);
-}
-
-.move-status.is-error {
-    color: var(--danger);
-}
-
 .detail-delete {
     margin-top: 22px;
 }

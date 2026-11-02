@@ -1,0 +1,53 @@
+.rv-editor {
+    max-width: 720px;
+    margin-top: 24px;
+}
+
+#rv-lieux tr.is-selected {
+    box-shadow: inset 3px 0 0 #0F2219;
+}
+
+#rv-move-map {
+    height: 360px;
+    margin: 12px 0 16px;
+    border: 1px solid #c3c4c7;
+    background: #d7dfd4;
+}
+
+#rv-lieux .leaflet-container {
+    font-family: inherit;
+}
+
+#rv-lieux .leaflet-div-icon.pin-wrap {
+    background: transparent;
+    border: none;
+}
+
+#rv-lieux .move-pin {
+    display: block;
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    margin: 4px;
+    border: 3px solid #f4f1e8;
+    border-radius: 50%;
+    background: #0F2219;
+    box-shadow: 0 0 0 2px #c6a15b, 0 2px 6px rgba(15, 34, 25, 0.45);
+    cursor: grab;
+}
+
+#rv-lieux .leaflet-dragging .move-pin {
+    cursor: grabbing;
+}
+
+#rv-lieux .rv-move-status {
+    font-weight: 600;
+}
+
+#rv-lieux .rv-move-status.is-ok {
+    color: #0F2219;
+}
+
+#rv-lieux .rv-move-status.is-error {
+    color: #8a2424;
+}

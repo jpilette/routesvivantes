@@ -3,7 +3,7 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,8 @@ Formulaire public pour déclarer un animal mort ou blessé, et carte des signale
 Le plugin ajoute deux pages indépendantes du thème WordPress.
 
 * `/routesvivantes/` — formulaire en français facile à lire. Il s’ouvre sur le bouton « Faire un signalement ». Ensuite : l’état de l’animal. Le lieu n’est demandé qu’après ce bouton, et seulement si le téléphone ne l’a pas déjà autorisé. Puis : type d’animal, une photo obligatoire et une deuxième photo facultative (appareil photo ou image déjà sur l’appareil), mot libre.
-* `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point. Un clic ouvre la fiche. Vous pouvez y déplacer le lieu, puis l’enregistrer. Le seul filtre est une période.
+* `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point. Un clic ouvre la fiche. Le seul filtre est une période. Cette page ne modifie pas le lieu.
+* Administration WordPress, menu **Routes Vivantes** (`wp-admin/admin.php?page=rv-decl-lieux`) — liste des signalements. Vous y déplacez le lieu d’un signalement, puis vous l’enregistrez.
 
 La carte, le JSON et les photos sont réservés aux comptes qui ont la capacité `manage_options`.
 
@@ -29,6 +30,7 @@ Le code est sous GPL. Le logo de l’association Routes Vivantes reste sa marque
 4. Ouvrir Réglages → Permaliens. Choisir une structure autre que « Simple », puis enregistrer.
 5. Ouvrir `https://exemple.fr/routesvivantes/` pour le formulaire.
 6. Ouvrir `https://exemple.fr/routesvivantes/admin/` pour la carte. Il faut un compte administrateur.
+7. Pour déplacer un lieu, ouvrir le menu **Routes Vivantes** dans l’administration WordPress.
 
 La désactivation ne supprime ni la table ni les photos. Elle retire seulement les adresses du plugin.
 
@@ -62,7 +64,15 @@ Un visiteur anonyme est renvoyé vers la connexion WordPress. Un compte connect�
 
 Un administrateur peut supprimer un signalement depuis sa fiche. La carte demande une confirmation. La ligne et les fichiers photo sont alors retirés. Un visiteur anonyme ne peut pas supprimer.
 
-Sur la fiche, une petite carte place un point sur le lieu enregistré. Vous déplacez ce point, puis vous touchez « Enregistrer ce lieu ». La latitude et la longitude sont alors mises à jour. Fermer la fiche sans enregistrer laisse l’ancien lieu. Un visiteur anonyme ne peut pas modifier le lieu.
+La carte ne sert qu’à voir les signalements et à filtrer par date. Elle ne déplace pas un lieu.
+
+== Lieux dans l’administration ==
+
+Menu : **Routes Vivantes**. Adresse : `wp-admin/admin.php?page=rv-decl-lieux`.
+
+L’écran liste les signalements. Vous choisissez « Déplacer ce lieu ». Une carte place un point sur les coordonnées enregistrées. Vous déplacez ce point, puis vous touchez « Enregistrer ce lieu ». La latitude et la longitude sont alors mises à jour. Changer de signalement sans enregistrer laisse l’ancien lieu.
+
+Seuls les comptes `manage_options` voient ce menu. Un visiteur anonyme ne peut pas modifier le lieu.
 
 La période est optionnelle. Vide = tous les signalements. Une seule date borne un seul côté. Les dates suivent le fuseau horaire du site.
 
@@ -76,7 +86,7 @@ Adresse du fichier :
 
 `https://raw.githubusercontent.com/jpilette/routesvivantes/cursor/routes-vivantes-declarations-e73d/routes-vivantes-declarations/update.json`
 
-Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.7.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
+Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.8.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
 
 Pour publier une version :
 
@@ -90,6 +100,10 @@ Une installation restée en 1.1.0 appelle encore l’API GitHub. Vous installez 
 La bibliothèque est chargée dans l’administration WordPress, dans WP-CLI, dans le cron, et dans la requête qui installe la mise à jour. Les pages `/routesvivantes/` et `/routesvivantes/admin/`, ainsi que l’envoi du formulaire, ne la chargent pas.
 
 == Changelog ==
+
+= 1.8.0 =
+* Le déplacement d’un lieu se fait dans l’administration WordPress, menu Routes Vivantes.
+* La carte `/routesvivantes/admin/` sert à voir les signalements et à filtrer par date.
 
 = 1.7.0 =
 * Sur la fiche d’un signalement, une carte montre son lieu. Vous déplacez le point, puis vous enregistrez. La latitude et la longitude sont mises à jour.

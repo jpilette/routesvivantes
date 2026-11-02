@@ -23,7 +23,7 @@ $rv_json = home_url('/routesvivantes/admin/donnees/');
     <link rel="icon" href="<?php echo esc_url($rv_logo); ?>">
     <?php wp_head(); ?>
 </head>
-<body class="page-map" data-json="<?php echo esc_url($rv_json); ?>" data-ajax="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('rv_decl_delete')); ?>" data-move-nonce="<?php echo esc_attr(wp_create_nonce('rv_decl_move')); ?>">
+<body class="page-map" data-json="<?php echo esc_url($rv_json); ?>" data-ajax="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('rv_decl_delete')); ?>">
     <a class="skip" href="#contenu">Aller à la carte</a>
     <header class="top">
         <img class="logo" src="<?php echo esc_url($rv_logo); ?>" width="72" height="72" alt="Routes Vivantes, ouvrons les yeux">
@@ -59,6 +59,7 @@ $rv_json = home_url('/routesvivantes/admin/donnees/');
             Carré or : blessé.
         </p>
         <p class="count" id="rv-count" role="status">Chargement des signalements.</p>
+        <p class="legend">Pour déplacer un lieu, ouvrez le menu Routes Vivantes dans l’administration WordPress.</p>
         <div id="rv-map" role="region" aria-label="Carte de France des signalements"></div>
     </main>
 
@@ -70,15 +71,8 @@ $rv_json = home_url('/routesvivantes/admin/donnees/');
         <p class="chip" id="rv-detail-status"></p>
         <p><span class="meta">Date</span> <strong id="rv-detail-date"></strong></p>
         <p><span class="meta">Mot</span> <span id="rv-detail-remark"></span></p>
-        <div class="detail-move">
-            <p class="move-title">Déplacez le lieu</p>
-            <p>Le point est sur le lieu du signalement. Déplacez-le, puis enregistrez.</p>
-            <div id="rv-move-map" role="region" aria-label="Carte pour déplacer le lieu"></div>
-            <p><span class="meta">Latitude</span> <strong id="rv-detail-lat"></strong></p>
-            <p><span class="meta">Longitude</span> <strong id="rv-detail-lng"></strong></p>
-            <button type="button" class="btn" id="rv-move-save">Enregistrer ce lieu</button>
-            <p class="move-status" id="rv-move-status" role="status" hidden></p>
-        </div>
+        <p><span class="meta">Latitude</span> <strong id="rv-detail-lat"></strong></p>
+        <p><span class="meta">Longitude</span> <strong id="rv-detail-lng"></strong></p>
         <figure>
             <img id="rv-photo-1" alt="" hidden>
             <figcaption id="rv-caption-1">Photo 1</figcaption>
