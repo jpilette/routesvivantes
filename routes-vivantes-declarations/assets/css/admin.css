@@ -1,0 +1,223 @@
+body.page-map {
+    background: var(--cream);
+}
+
+.period {
+    padding: 18px 20px 8px;
+}
+
+.period-copy h2 {
+    font-size: 1.6rem;
+}
+
+.period-copy p {
+    color: var(--sage);
+}
+
+.period-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 700;
+}
+
+.date-field input {
+    width: 100%;
+    min-height: 64px;
+    padding: 10px 14px;
+    border: 2px solid var(--sand);
+    border-radius: 16px;
+    background: var(--white);
+    color: var(--forest);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.legend,
+.count {
+    margin: 0;
+    padding: 4px 20px;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    color: var(--forest);
+    font-size: 1.05rem;
+}
+
+.swatch {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--forest);
+}
+
+.swatch-dead {
+    border-radius: 50%;
+    background: var(--green);
+}
+
+.swatch-hurt {
+    border-radius: 4px;
+    background: var(--gold);
+}
+
+.count {
+    min-height: 1.5em;
+    padding-bottom: 10px;
+    font-weight: 700;
+}
+
+#rv-map {
+    height: 62dvh;
+    min-height: 320px;
+    background: var(--sand);
+}
+
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+    font-family: var(--font);
+    background: var(--sand);
+}
+
+.leaflet-div-icon.pin-wrap {
+    background: transparent;
+    border: none;
+}
+
+.pin {
+    display: block;
+    width: 22px;
+    height: 22px;
+    margin: 7px;
+    border: 3px solid var(--cream);
+    box-shadow: 0 0 0 2px var(--forest), 0 2px 6px rgba(15, 34, 25, 0.45);
+}
+
+.pin-dead {
+    border-radius: 50%;
+    background: var(--green);
+}
+
+.pin-hurt {
+    border-radius: 5px;
+    background: var(--gold);
+}
+
+.scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(15, 34, 25, 0.45);
+}
+
+.detail {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1001;
+    max-height: 86dvh;
+    overflow: auto;
+    padding: 16px 20px calc(24px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0;
+    background: var(--cream);
+    box-shadow: 0 -12px 40px rgba(15, 34, 25, 0.28);
+}
+
+.detail h2 {
+    margin-top: 4px;
+}
+
+.detail-icon {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.detail-close {
+    margin-bottom: 8px;
+}
+
+.chip {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--green);
+    color: var(--white);
+    font-weight: 700;
+}
+
+.chip.is-hurt {
+    background: var(--gold);
+    color: var(--forest);
+}
+
+.meta {
+    display: inline-block;
+    min-width: 7.2rem;
+    color: var(--sage);
+    font-weight: 600;
+}
+
+.detail figure {
+    margin: 14px 0 0;
+}
+
+.detail img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    background: var(--sand);
+}
+
+.detail figcaption {
+    margin-top: 6px;
+    color: var(--sage);
+    font-weight: 600;
+}
+
+#rv-detail-remark {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (min-width: 800px) {
+    .period-grid {
+        grid-template-columns: 1fr 1fr auto;
+        align-items: end;
+    }
+
+    .period-grid .btn {
+        width: auto;
+        min-width: 180px;
+        padding-right: 28px;
+        padding-left: 28px;
+    }
+
+    #rv-map {
+        height: calc(100dvh - 280px);
+    }
+
+    .detail {
+        top: 24px;
+        right: 24px;
+        bottom: 24px;
+        left: auto;
+        width: min(440px, 42vw);
+        max-height: none;
+        border-radius: 24px;
+    }
+}
