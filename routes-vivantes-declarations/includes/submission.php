@@ -234,15 +234,18 @@ function rv_decl_send_error(string $message, int $status = 400): void {
 /**
  * Réponse JSON de succès. La fonction termine la requête.
  */
-function rv_decl_send_ok(string $message): void {
+function rv_decl_send_ok(string $message, array $extra = []): void {
     nocache_headers();
     header('X-Content-Type-Options: nosniff');
     header('X-Robots-Tag: noindex');
     wp_send_json(
-        [
-            'ok'      => true,
-            'message' => $message,
-        ],
+        array_merge(
+            [
+                'ok'      => true,
+                'message' => $message,
+            ],
+            $extra
+        ),
         200
     );
 }

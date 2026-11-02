@@ -1,8 +1,8 @@
 {
   "name": "Routes Vivantes — Déclarations",
   "slug": "routes-vivantes-declarations",
-  "version": "1.6.0",
-  "download_url": "https://github.com/jpilette/routesvivantes/releases/download/v1.6.0/routes-vivantes-declarations.zip",
+  "version": "1.7.0",
+  "download_url": "https://github.com/jpilette/routesvivantes/releases/download/v1.7.0/routes-vivantes-declarations.zip",
   "homepage": "https://www.routesvivantes.fr/",
   "requires": "6.0",
   "tested": "7.1",
@@ -10,6 +10,6 @@
   "author": "Routes Vivantes",
   "sections": {
     "description": "Formulaire public pour déclarer un animal mort ou blessé, et carte des signalements pour les administrateurs.",
-    "changelog": "<p>1.6.0 — Pour chaque photo, vous pouvez la prendre avec l’appareil photo ou en choisir une déjà sur l’appareil. La première reste obligatoire. La deuxième reste facultative. La page s’ouvre sur le bouton « Faire un signalement ».</p><p>1.4.0 — La recherche de mise à jour lit un fichier public. Elle n’appelle plus l’API GitHub. Depuis la liste des extensions, vous installez la dernière version publiée.</p>"
+    "changelog": "<p>1.7.0 — Sur la fiche d’un signalement, une carte montre son lieu. Vous déplacez le point, puis vous enregistrez. La latitude et la longitude sont mises à jour.</p><p>1.6.0 — Pour chaque photo, vous pouvez la prendre avec l’appareil photo ou en choisir une déjà sur l’appareil. La première reste obligatoire. La deuxième reste facultative. La page s’ouvre sur le bouton « Faire un signalement ».</p><p>1.4.0 — La recherche de mise à jour lit un fichier public. Elle n’appelle plus l’API GitHub. Depuis la liste des extensions, vous installez la dernière version publiée.</p>"
   }
 }

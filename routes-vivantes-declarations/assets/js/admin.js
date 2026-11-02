@@ -33,7 +33,10 @@
     }).addTo(map);
     var layer = L.layerGroup().addTo(map);
     var markers = {};
+    var itemsById = {};
     var fitPasses = 0;
+    var moveMap = null;
+    var moveMarker = null;
 
     function fitFrance() {
         map.invalidateSize();
@@ -49,6 +52,15 @@
         return L.divIcon({
             className: 'pin-wrap',
             html: '<span class="' + kind + '"></span>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
+        });
+    }
+
+    function moveIcon() {
+        return L.divIcon({
+            className: 'pin-wrap',
+            html: '<span class="move-pin"></span>',
             iconSize: [36, 36],
             iconAnchor: [18, 18]
         });
@@ -95,6 +107,62 @@
         caption.textContent = slot === 2 ? 'Pas de photo 2.' : 'Photo 1 manquante.';
     }
 
+    function setMoveStatus(text, kind) {
+        var status = document.getElementById('rv-move-status');
+        if (!status) {
+            return;
+        }
+        status.classList.remove('is-ok', 'is-error');
+        if (!text) {
+            status.hidden = true;
+            status.textContent = '';
+            return;
+        }
+        status.hidden = false;
+        status.textContent = text;
+        if (kind) {
+            status.classList.add(kind);
+        }
+    }
+
+    function showSavedCoords(lat, lng) {
+        document.getElementById('rv-detail-lat').textContent = formatCoord(lat);
+        document.getElementById('rv-detail-lng').textContent = formatCoord(lng);
+    }
+
+    function ensureMoveMap() {
+        if (moveMap) {
+            return;
+        }
+        var node = document.getElementById('rv-move-map');
+        moveMap = L.map(node, {
+            scrollWheelZoom: false,
+            zoomControl: true
+        });
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(moveMap);
+        moveMarker = L.marker([46.6, 2.5], {
+            draggable: true,
+            keyboard: true,
+            title: 'Lieu du signalement',
+            icon: moveIcon()
+        }).addTo(moveMap);
+        moveMarker.on('drag', function () {
+            var point = moveMarker.getLatLng();
+            showSavedCoords(point.lat, point.lng);
+            setMoveStatus('', '');
+        });
+    }
+
+    function placeMoveMap(lat, lng) {
+        ensureMoveMap();
+        moveMarker.setLatLng([lat, lng]);
+        moveMap.invalidateSize();
+        moveMap.setView([lat, lng], 16, { animate: false });
+    }
+
     function openDetail(item) {
         document.getElementById('rv-detail-icon').textContent = item.icon || '';
         document.getElementById('rv-detail-animal').textContent = item.animal_label || 'Animal';
@@ -106,12 +174,31 @@
         document.getElementById('rv-detail-remark').textContent = remark || 'Pas de mot en plus.';
         panel.setAttribute('data-id', String(item.id));
         resetDeletePrompt();
-        document.getElementById('rv-detail-lat').textContent = formatCoord(item.lat);
-        document.getElementById('rv-detail-lng').textContent = formatCoord(item.lng);
+        showSavedCoords(item.lat, item.lng);
+        setMoveStatus('', '');
+        var save = document.getElementById('rv-move-save');
+        if (save) {
+            save.disabled = false;
+            save.textContent = 'Enregistrer ce lieu';
+        }
         showPhoto(1, item.photo_1 || '');
         showPhoto(2, item.photo_2 || '');
         scrim.hidden = false;
         panel.hidden = false;
+        var lat = Number(item.lat);
+        var lng = Number(item.lng);
+        window.requestAnimationFrame(function () {
+            if (!isFinite(lat) || !isFinite(lng)) {
+                return;
+            }
+            placeMoveMap(lat, lng);
+        });
+        window.setTimeout(function () {
+            if (moveMap && moveMarker && !panel.hidden) {
+                moveMap.invalidateSize();
+                moveMap.setView(moveMarker.getLatLng(), moveMap.getZoom() || 16, { animate: false });
+            }
+        }, 280);
         document.getElementById('rv-detail-close').focus();
     }
 
@@ -150,6 +237,7 @@
     function draw(items) {
         layer.clearLayers();
         markers = {};
+        itemsById = {};
         closeQuiet();
         var shown = 0;
         items.forEach(function (item) {
@@ -158,6 +246,8 @@
             if (!isFinite(lat) || !isFinite(lng)) {
                 return;
             }
+            var key = String(item.id);
+            itemsById[key] = item;
             var title = (item.animal_label || 'Animal') + ', ' + (item.status_label || '');
             var marker = L.marker([lat, lng], {
                 icon: iconFor(item.status),
@@ -165,10 +255,10 @@
                 title: title
             });
             marker.on('click', function () {
-                openDetail(item);
+                openDetail(itemsById[key]);
             });
             marker.addTo(layer);
-            markers[String(item.id)] = marker;
+            markers[key] = marker;
             shown += 1;
         });
         setCount(countLabel(shown));
@@ -240,6 +330,66 @@
         load();
     });
 
+    document.getElementById('rv-move-save').addEventListener('click', function () {
+        var id = panel.getAttribute('data-id');
+        var save = document.getElementById('rv-move-save');
+        if (!id || !moveMarker) {
+            return;
+        }
+        var point = moveMarker.getLatLng();
+        save.disabled = true;
+        save.textContent = 'Enregistrement…';
+        setMoveStatus('', '');
+        var body = new URLSearchParams();
+        body.set('action', 'rv_decl_move');
+        body.set('nonce', document.body.getAttribute('data-move-nonce') || '');
+        body.set('id', id);
+        body.set('lat', point.lat.toFixed(7));
+        body.set('lng', point.lng.toFixed(7));
+        fetch(document.body.getAttribute('data-ajax'), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: body.toString()
+        }).then(function (response) {
+            return response.json().catch(function () {
+                return null;
+            });
+        }).then(function (data) {
+            save.disabled = false;
+            save.textContent = 'Enregistrer ce lieu';
+            if (!data || data.ok !== true) {
+                setMoveStatus(
+                    data && data.message ? data.message : 'Le lieu n’a pas été enregistré. Réessayez.',
+                    'is-error'
+                );
+                return;
+            }
+            var lat = Number(data.lat);
+            var lng = Number(data.lng);
+            if (!isFinite(lat) || !isFinite(lng)) {
+                lat = point.lat;
+                lng = point.lng;
+            }
+            if (itemsById[id]) {
+                itemsById[id].lat = lat;
+                itemsById[id].lng = lng;
+            }
+            if (markers[id]) {
+                markers[id].setLatLng([lat, lng]);
+            }
+            if (panel.getAttribute('data-id') === id && !panel.hidden) {
+                moveMarker.setLatLng([lat, lng]);
+                showSavedCoords(lat, lng);
+                setMoveStatus('Le lieu est enregistré.', 'is-ok');
+            }
+        }).catch(function () {
+            save.disabled = false;
+            save.textContent = 'Enregistrer ce lieu';
+            setMoveStatus('Le lieu n’a pas été enregistré. Vérifiez la connexion, puis réessayez.', 'is-error');
+        });
+    });
+
     document.getElementById('rv-delete-ask').addEventListener('click', function () {
         document.getElementById('rv-delete-ask').hidden = true;
         document.getElementById('rv-delete-confirm').hidden = false;
@@ -304,6 +454,9 @@
 
     window.addEventListener('resize', function () {
         map.invalidateSize();
+        if (moveMap && !panel.hidden) {
+            moveMap.invalidateSize();
+        }
     });
     window.addEventListener('load', fitFrance);
     setTimeout(fitFrance, 60);

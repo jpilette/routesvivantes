@@ -287,6 +287,67 @@ function rv_decl_handle_delete(): void {
 }
 
 /**
+ * Enregistre un nouveau lieu. Réservé à manage_options.
+ */
+function rv_decl_handle_move(): void {
+    if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) !== 'POST') {
+        rv_decl_send_error('Le lieu n’a pas été enregistré. Réessayez.', 405);
+    }
+
+    if (!is_user_logged_in() || !current_user_can('manage_options')) {
+        rv_decl_send_error('Vous ne pouvez pas modifier ce signalement.', 403);
+    }
+
+    $nonce = '';
+    if (isset($_POST['nonce']) && !is_array($_POST['nonce'])) {
+        $nonce = sanitize_text_field(wp_unslash((string) $_POST['nonce']));
+    }
+    if ($nonce === '' || !wp_verify_nonce($nonce, 'rv_decl_move')) {
+        rv_decl_send_error('La page est trop ancienne. Rechargez la page.', 403);
+    }
+
+    $id = isset($_POST['id']) && !is_array($_POST['id']) ? absint(wp_unslash($_POST['id'])) : 0;
+    if ($id < 1) {
+        rv_decl_send_error('Ce signalement n’existe plus.', 404);
+    }
+
+    $lat = rv_decl_parse_coord(rv_decl_post_text('lat'), -90.0, 90.0);
+    $lng = rv_decl_parse_coord(rv_decl_post_text('lng'), -180.0, 180.0);
+    if ($lat === null || $lng === null || (abs((float) $lat) < 0.0000001 && abs((float) $lng) < 0.0000001)) {
+        rv_decl_send_error('Le lieu n’est pas valide. Déplacez le point sur la carte.');
+    }
+
+    global $wpdb;
+    $table = rv_decl_table_name();
+    $exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table} WHERE id = %d", $id));
+    if ($exists === null) {
+        rv_decl_send_error('Ce signalement n’existe plus.', 404);
+    }
+
+    $updated = $wpdb->update(
+        $table,
+        [
+            'lat' => $lat,
+            'lng' => $lng,
+        ],
+        ['id' => $id],
+        ['%s', '%s'],
+        ['%d']
+    );
+    if ($updated === false) {
+        rv_decl_send_error('Le lieu n’a pas été enregistré. Réessayez.', 500);
+    }
+
+    rv_decl_send_ok(
+        'Le lieu est enregistré.',
+        [
+            'lat' => (float) $lat,
+            'lng' => (float) $lng,
+        ]
+    );
+}
+
+/**
  * Erreur JSON de la carte. Termine la requête.
  */
 function rv_decl_admin_json_error(string $message, int $status): void {
