@@ -194,6 +194,30 @@ body.page-map {
     overflow-wrap: anywhere;
 }
 
+.detail-delete {
+    margin-top: 22px;
+}
+
+.detail-delete p {
+    margin: 0 0 8px;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: var(--white);
+}
+
+.btn-danger:hover,
+.btn-danger:focus-visible {
+    background: #6E2424;
+}
+
+.delete-error {
+    margin-top: 10px;
+    color: var(--danger);
+    font-weight: 700;
+}
+
 @media (min-width: 800px) {
     .period-grid {
         grid-template-columns: 1fr 1fr auto;

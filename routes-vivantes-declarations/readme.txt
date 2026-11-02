@@ -3,7 +3,7 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ Formulaire public pour déclarer un animal mort ou blessé, et carte des signale
 
 Le plugin ajoute deux pages indépendantes du thème WordPress.
 
-* `/routesvivantes/` — formulaire en français facile à lire. Il commence par l’état de l’animal. Le lieu n’est demandé que si le téléphone ne l’a pas déjà autorisé. Ensuite : type d’animal, deux photos prises avec l’appareil photo, mot libre.
+* `/routesvivantes/` — formulaire en français facile à lire. Il commence par l’état de l’animal. Le lieu n’est demandé que si le téléphone ne l’a pas déjà autorisé. Ensuite : type d’animal, une photo obligatoire et une deuxième photo facultative, mot libre.
 * `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point. Un clic ouvre la fiche. Le seul filtre est une période.
 
 La carte, le JSON et les photos sont réservés aux comptes qui ont la capacité `manage_options`.
@@ -38,7 +38,7 @@ Le visiteur n’a pas besoin de compte. La première question est : l’animal e
 
 L’envoi vérifie un nonce, la taille des photos (8 Mo chacune) et un plafond de 8 signalements par heure et par adresse IP. L’adresse IP n’est pas enregistrée : seul un compteur temporaire est utilisé.
 
-Champs enregistrés : date, état (`mort` ou `blessé`), animal, remarque, latitude, longitude, chemins des deux photos.
+Champs enregistrés : date, état (`mort` ou `blessé`), animal, remarque, latitude, longitude, chemin de la photo 1. La photo 2 est enregistrée seulement si elle a été prise.
 
 Animaux proposés : hérisson, renard, blaireau, chevreuil, sanglier, oiseau, chouette, crapaud, lapin, lièvre, écureuil, fouine, ragondin, chat, autre.
 
@@ -57,6 +57,8 @@ Ne pas mettre `/routesvivantes/` en cache : la page contient un nonce.
 * Photo : `/routesvivantes/admin/photo/{id}/1/` et `/2/`
 
 Un visiteur anonyme est renvoyé vers la connexion WordPress. Un compte connecté sans `manage_options` aussi, sans revenir sur la carte (pour éviter une boucle).
+
+Un administrateur peut supprimer un signalement depuis sa fiche. La carte demande une confirmation. La ligne et les fichiers photo sont alors retirés. Un visiteur anonyme ne peut pas supprimer.
 
 La période est optionnelle. Vide = tous les signalements. Une seule date borne un seul côté. Les dates suivent le fuseau horaire du site.
 
@@ -90,6 +92,10 @@ L’archive automatique de GitHub enveloppe tout le dépôt. À l’installation
 La bibliothèque n’est chargée que dans l’administration WordPress, dans WP-CLI et dans le cron. Les pages `/routesvivantes/` et `/routesvivantes/admin/` ne la chargent pas.
 
 == Changelog ==
+
+= 1.3.0 =
+* Une seule photo est obligatoire. La deuxième est facultative.
+* Un administrateur peut supprimer un signalement et ses photos, après confirmation.
 
 = 1.2.0 =
 * Le formulaire commence par le signalement. Le lieu n’est demandé que s’il n’est pas déjà autorisé.

@@ -201,7 +201,9 @@
     function updateRecap() {
         var status = selected('status');
         var statusLabel = status === 'mort' ? 'Mort' : (status === 'blessé' ? 'Blessé' : '');
-        var parts = [statusLabel, selectedLabel('animal_type'), '2 photos', 'lieu noté'];
+        var photoCount = (photos[1] ? 1 : 0) + (photos[2] ? 1 : 0);
+        var photoLabel = photoCount > 1 ? '2 photos' : '1 photo';
+        var parts = [statusLabel, selectedLabel('animal_type'), photoLabel, 'lieu noté'];
         document.getElementById('rv-recap').textContent = parts.filter(Boolean).join(' · ');
     }
 
@@ -358,8 +360,8 @@
             showError('Choisissez un animal de la liste.');
             return false;
         }
-        if (part === 'photo' && !photos[step.getAttribute('data-photo')]) {
-            showError('La photo ' + step.getAttribute('data-photo') + ' est obligatoire.');
+        if (part === 'photo' && step.getAttribute('data-photo') === '1' && !photos[1]) {
+            showError('La photo 1 est obligatoire.');
             return false;
         }
         return true;
@@ -598,8 +600,7 @@
         var checks = [
             ['etat'],
             ['animal'],
-            ['photo', '1'],
-            ['photo', '2']
+            ['photo', '1']
         ];
         var index;
         for (index = 0; index < checks.length; index += 1) {
@@ -641,7 +642,9 @@
         body.append('lat', latInput.value);
         body.append('lng', lngInput.value);
         body.append('photo_1', photos[1].blob, 'photo-1.jpg');
-        body.append('photo_2', photos[2].blob, 'photo-2.jpg');
+        if (photos[2] && photos[2].blob) {
+            body.append('photo_2', photos[2].blob, 'photo-2.jpg');
+        }
 
         fetch(document.body.getAttribute('data-ajax'), {
             method: 'POST',

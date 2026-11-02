@@ -3,7 +3,7 @@
  * Plugin Name:       Routes Vivantes — Déclarations
  * Plugin URI:        https://www.routesvivantes.fr/
  * Description:       Formulaire public pour déclarer un animal mort ou blessé (/routesvivantes/) et carte des signalements pour les administrateurs (/routesvivantes/admin/).
- * Version:           1.2.0
+ * Version:           1.3.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Routes Vivantes
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RV_DECL_VERSION', '1.2.0');
+define('RV_DECL_VERSION', '1.3.0');
 define('RV_DECL_DB_VERSION', '1');
 define('RV_DECL_FILE', __FILE__);
 define('RV_DECL_DIR', plugin_dir_path(__FILE__));
@@ -54,6 +54,7 @@ add_action('template_redirect', 'rv_decl_dispatch', 0);
 add_action('admin_notices', 'rv_decl_permalink_notice');
 add_action('wp_ajax_rv_decl_submit', 'rv_decl_handle_submit');
 add_action('wp_ajax_nopriv_rv_decl_submit', 'rv_decl_handle_submit');
+add_action('wp_ajax_rv_decl_delete', 'rv_decl_handle_delete');
 
 /**
  * La bibliothèque de mise à jour parle au dépôt GitHub et accroche

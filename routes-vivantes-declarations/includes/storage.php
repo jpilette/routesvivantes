@@ -125,13 +125,13 @@ function rv_decl_absolute_from_relative(string $relative): ?string {
 function rv_decl_store_uploaded_photo(array $file) {
     foreach (['tmp_name', 'error', 'size'] as $key) {
         if (!isset($file[$key]) || is_array($file[$key])) {
-            return new WP_Error('rv_photo', 'Les 2 photos sont obligatoires.');
+            return new WP_Error('rv_photo', 'La photo est obligatoire.');
         }
     }
 
     $error = (int) $file['error'];
     if ($error === UPLOAD_ERR_NO_FILE) {
-        return new WP_Error('rv_photo', 'Les 2 photos sont obligatoires.');
+        return new WP_Error('rv_photo', 'La photo est obligatoire.');
     }
     if ($error === UPLOAD_ERR_INI_SIZE || $error === UPLOAD_ERR_FORM_SIZE) {
         return new WP_Error('rv_photo', 'Une photo est trop lourde. 8 Mo maximum.');

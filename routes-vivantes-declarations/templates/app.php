@@ -20,7 +20,7 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0F2219">
-    <meta name="description" content="Signaler un animal mort ou blessé sur la route. Le lieu et deux photos sont demandés.">
+    <meta name="description" content="Signaler un animal mort ou blessé sur la route. Le lieu et une photo sont demandés.">
     <title>Signaler un animal — Routes Vivantes</title>
     <link rel="icon" href="<?php echo esc_url($rv_logo); ?>">
     <?php wp_head(); ?>
@@ -123,8 +123,8 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                     2 => [
                         'step'  => 5,
                         'title' => 'Photo 2',
-                        'lead'  => 'Prenez une autre photo.',
-                        'more'  => 'Montrez l’animal d’un autre côté.',
+                        'lead'  => 'Vous pouvez prendre une autre photo.',
+                        'more'  => 'Ce n’est pas obligatoire. Montrez l’animal d’un autre côté.',
                     ],
                 ];
                 foreach ($rv_photo_steps as $rv_index => $rv_photo) :
@@ -189,7 +189,7 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
             </section>
         </main>
 
-        <p class="fine">Nous gardons le lieu, l’animal et les 2 photos.</p>
+        <p class="fine">Nous gardons le lieu, l’animal et les photos.</p>
     </div>
 
     <div class="camera" id="rv-camera" hidden>

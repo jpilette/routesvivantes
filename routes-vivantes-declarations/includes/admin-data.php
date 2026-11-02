@@ -234,6 +234,59 @@ function rv_decl_photo_not_found(): void {
 }
 
 /**
+ * Supprime un signalement et ses photos. Réservé à manage_options.
+ */
+function rv_decl_handle_delete(): void {
+    if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) !== 'POST') {
+        rv_decl_send_error('La suppression n’a pas marché. Réessayez.', 405);
+    }
+
+    if (!is_user_logged_in() || !current_user_can('manage_options')) {
+        rv_decl_send_error('Vous ne pouvez pas supprimer ce signalement.', 403);
+    }
+
+    $nonce = '';
+    if (isset($_POST['nonce']) && !is_array($_POST['nonce'])) {
+        $nonce = sanitize_text_field(wp_unslash((string) $_POST['nonce']));
+    }
+    if ($nonce === '' || !wp_verify_nonce($nonce, 'rv_decl_delete')) {
+        rv_decl_send_error('La page est trop ancienne. Rechargez la page.', 403);
+    }
+
+    $id = isset($_POST['id']) && !is_array($_POST['id']) ? absint(wp_unslash($_POST['id'])) : 0;
+    if ($id < 1) {
+        rv_decl_send_error('Ce signalement n’existe plus.', 404);
+    }
+
+    global $wpdb;
+    $table = rv_decl_table_name();
+    $row = $wpdb->get_row(
+        $wpdb->prepare("SELECT id, photo_1, photo_2 FROM {$table} WHERE id = %d", $id),
+        ARRAY_A
+    );
+    if (!is_array($row)) {
+        rv_decl_send_error('Ce signalement n’existe plus.', 404);
+    }
+
+    $photo_1 = (string) ($row['photo_1'] ?? '');
+    $photo_2 = (string) ($row['photo_2'] ?? '');
+    rv_decl_delete_photo($photo_1);
+    rv_decl_delete_photo($photo_2);
+
+    $deleted = $wpdb->delete($table, ['id' => $id], ['%d']);
+    if ($deleted === false) {
+        rv_decl_send_error('La suppression n’a pas marché. Réessayez.', 500);
+    }
+
+    if (rv_decl_absolute_from_relative($photo_1) !== null || rv_decl_absolute_from_relative($photo_2) !== null) {
+        rv_decl_delete_photo($photo_1);
+        rv_decl_delete_photo($photo_2);
+    }
+
+    rv_decl_send_ok('Le signalement est supprimé.');
+}
+
+/**
  * Erreur JSON de la carte. Termine la requête.
  */
 function rv_decl_admin_json_error(string $message, int $status): void {

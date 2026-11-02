@@ -66,15 +66,23 @@ function rv_decl_handle_submit(): void {
         rv_decl_send_error('Trop de signalements. Attendez une heure. Puis réessayez.', 429);
     }
 
-    $photo_1 = rv_decl_store_uploaded_photo(isset($_FILES['photo_1']) && is_array($_FILES['photo_1']) ? $_FILES['photo_1'] : []);
+    $photo_1_file = rv_decl_optional_upload('photo_1');
+    if ($photo_1_file === null) {
+        rv_decl_send_error('La photo 1 est obligatoire.');
+    }
+    $photo_1 = rv_decl_store_uploaded_photo($photo_1_file);
     if (is_wp_error($photo_1)) {
         rv_decl_send_error($photo_1->get_error_message());
     }
 
-    $photo_2 = rv_decl_store_uploaded_photo(isset($_FILES['photo_2']) && is_array($_FILES['photo_2']) ? $_FILES['photo_2'] : []);
-    if (is_wp_error($photo_2)) {
-        rv_decl_delete_photo($photo_1);
-        rv_decl_send_error($photo_2->get_error_message());
+    $photo_2 = '';
+    $photo_2_file = rv_decl_optional_upload('photo_2');
+    if ($photo_2_file !== null) {
+        $photo_2 = rv_decl_store_uploaded_photo($photo_2_file);
+        if (is_wp_error($photo_2)) {
+            rv_decl_delete_photo($photo_1);
+            rv_decl_send_error($photo_2->get_error_message());
+        }
     }
 
     global $wpdb;
@@ -102,6 +110,27 @@ function rv_decl_handle_submit(): void {
 
     rv_decl_rate_hit('success');
     rv_decl_send_ok('C’est bien envoyé. Votre signalement est enregistré.');
+}
+
+/**
+ * Fichier vraiment envoyé, ou null s’il est absent.
+ *
+ * @return array<string, mixed>|null
+ */
+function rv_decl_optional_upload(string $key): ?array {
+    if (!isset($_FILES[$key]) || !is_array($_FILES[$key])) {
+        return null;
+    }
+
+    $file = $_FILES[$key];
+    if (!isset($file['error']) || is_array($file['error'])) {
+        return null;
+    }
+    if ((int) $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    return $file;
 }
 
 /**

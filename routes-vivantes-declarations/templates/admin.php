@@ -23,7 +23,7 @@ $rv_json = home_url('/routesvivantes/admin/donnees/');
     <link rel="icon" href="<?php echo esc_url($rv_logo); ?>">
     <?php wp_head(); ?>
 </head>
-<body class="page-map" data-json="<?php echo esc_url($rv_json); ?>">
+<body class="page-map" data-json="<?php echo esc_url($rv_json); ?>" data-ajax="<?php echo esc_url(admin_url('admin-ajax.php')); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('rv_decl_delete')); ?>">
     <a class="skip" href="#contenu">Aller à la carte</a>
     <header class="top">
         <img class="logo" src="<?php echo esc_url($rv_logo); ?>" width="72" height="72" alt="Routes Vivantes, ouvrons les yeux">
@@ -80,6 +80,16 @@ $rv_json = home_url('/routesvivantes/admin/donnees/');
             <img id="rv-photo-2" alt="" hidden>
             <figcaption id="rv-caption-2">Photo 2</figcaption>
         </figure>
+        <div class="detail-delete">
+            <button type="button" class="btn btn-danger" id="rv-delete-ask">Supprimer ce signalement</button>
+            <div id="rv-delete-confirm" hidden>
+                <p>Voulez-vous supprimer ce signalement ?</p>
+                <p>Les photos seront aussi supprimées.</p>
+                <button type="button" class="btn btn-danger" id="rv-delete-yes">Oui, supprimez-le</button>
+                <button type="button" class="btn btn-ghost" id="rv-delete-no">Non, gardez-le</button>
+            </div>
+            <p class="delete-error" id="rv-delete-error" role="alert" hidden></p>
+        </div>
     </section>
 
     <noscript>

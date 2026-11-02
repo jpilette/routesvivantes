@@ -32,6 +32,7 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
     var layer = L.layerGroup().addTo(map);
+    var markers = {};
     var fitPasses = 0;
 
     function fitFrance() {
@@ -91,7 +92,7 @@
         }
         image.hidden = true;
         image.removeAttribute('src');
-        caption.textContent = 'Photo ' + slot + ' manquante.';
+        caption.textContent = slot === 2 ? 'Pas de photo 2.' : 'Photo 1 manquante.';
     }
 
     function openDetail(item) {
@@ -103,6 +104,8 @@
         document.getElementById('rv-detail-date').textContent = item.date_label || '';
         var remark = (item.remark || '').trim();
         document.getElementById('rv-detail-remark').textContent = remark || 'Pas de mot en plus.';
+        panel.setAttribute('data-id', String(item.id));
+        resetDeletePrompt();
         document.getElementById('rv-detail-lat').textContent = formatCoord(item.lat);
         document.getElementById('rv-detail-lng').textContent = formatCoord(item.lng);
         showPhoto(1, item.photo_1 || '');
@@ -112,8 +115,41 @@
         document.getElementById('rv-detail-close').focus();
     }
 
+    function resetDeletePrompt() {
+        var ask = document.getElementById('rv-delete-ask');
+        var confirmBox = document.getElementById('rv-delete-confirm');
+        var error = document.getElementById('rv-delete-error');
+        if (ask) {
+            ask.hidden = false;
+            ask.disabled = false;
+        }
+        if (confirmBox) {
+            confirmBox.hidden = true;
+        }
+        if (error) {
+            error.hidden = true;
+            error.textContent = '';
+        }
+        var yes = document.getElementById('rv-delete-yes');
+        if (yes) {
+            yes.disabled = false;
+            yes.textContent = 'Oui, supprimez-le';
+        }
+    }
+
+    function removeMarker(id) {
+        var key = String(id);
+        if (!markers[key]) {
+            return;
+        }
+        layer.removeLayer(markers[key]);
+        delete markers[key];
+        setCount(countLabel(Object.keys(markers).length));
+    }
+
     function draw(items) {
         layer.clearLayers();
+        markers = {};
         closeQuiet();
         var shown = 0;
         items.forEach(function (item) {
@@ -132,6 +168,7 @@
                 openDetail(item);
             });
             marker.addTo(layer);
+            markers[String(item.id)] = marker;
             shown += 1;
         });
         setCount(countLabel(shown));
@@ -201,6 +238,60 @@
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         load();
+    });
+
+    document.getElementById('rv-delete-ask').addEventListener('click', function () {
+        document.getElementById('rv-delete-ask').hidden = true;
+        document.getElementById('rv-delete-confirm').hidden = false;
+        document.getElementById('rv-delete-yes').focus();
+    });
+
+    document.getElementById('rv-delete-no').addEventListener('click', function () {
+        resetDeletePrompt();
+        document.getElementById('rv-delete-ask').focus();
+    });
+
+    document.getElementById('rv-delete-yes').addEventListener('click', function () {
+        var id = panel.getAttribute('data-id');
+        var yes = document.getElementById('rv-delete-yes');
+        var error = document.getElementById('rv-delete-error');
+        if (!id) {
+            return;
+        }
+        yes.disabled = true;
+        yes.textContent = 'Suppression…';
+        error.hidden = true;
+        var body = new URLSearchParams();
+        body.set('action', 'rv_decl_delete');
+        body.set('nonce', document.body.getAttribute('data-nonce') || '');
+        body.set('id', id);
+        fetch(document.body.getAttribute('data-ajax'), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: body.toString()
+        }).then(function (response) {
+            return response.json().catch(function () {
+                return null;
+            });
+        }).then(function (data) {
+            if (!data || data.ok !== true) {
+                yes.disabled = false;
+                yes.textContent = 'Oui, supprimez-le';
+                error.hidden = false;
+                error.textContent = data && data.message
+                    ? data.message
+                    : 'La suppression n’a pas marché. Réessayez.';
+                return;
+            }
+            removeMarker(id);
+            closeDetail();
+        }).catch(function () {
+            yes.disabled = false;
+            yes.textContent = 'Oui, supprimez-le';
+            error.hidden = false;
+            error.textContent = 'La suppression n’a pas marché. Vérifiez la connexion, puis réessayez.';
+        });
     });
 
     document.getElementById('rv-detail-close').addEventListener('click', closeDetail);
