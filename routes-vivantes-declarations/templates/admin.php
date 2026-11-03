@@ -1,6 +1,6 @@
 <?php
 /**
- * Carte des signalements. Réservée aux comptes `manage_options`.
+ * Carte des signalements. Ouverte sans compte WordPress.
  *
  * @package RoutesVivantesDeclarations
  */

@@ -103,9 +103,42 @@ function rv_decl_mark_uncached(): void {
 }
 
 /**
+ * Reconnaît l’adresse même si les permaliens n’ont pas encore été enregistrés.
+ *
+ * Ainsi `/routesvivantes/admin/` reste la carte, et WordPress ne l’envoie pas
+ * vers `/wp-admin/`.
+ */
+function rv_decl_note_path_route(): void {
+    if (rv_decl_is_plugin_request()) {
+        return;
+    }
+
+    $path = rv_decl_request_path();
+    if ($path === '/routesvivantes') {
+        set_query_var('rv_decl_app', '1');
+        return;
+    }
+    if ($path === '/routesvivantes/admin') {
+        set_query_var('rv_decl_admin', '1');
+        return;
+    }
+    if ($path === '/routesvivantes/admin/donnees') {
+        set_query_var('rv_decl_json', '1');
+        return;
+    }
+    if (preg_match('#^/routesvivantes/admin/photo/([0-9]+)/([12])$#', $path, $matches) === 1) {
+        set_query_var('rv_decl_photo', '1');
+        set_query_var('rv_decl_id', $matches[1]);
+        set_query_var('rv_decl_slot', $matches[2]);
+    }
+}
+
+/**
  * Choisit la réponse et empêche le thème de prendre la main.
  */
 function rv_decl_dispatch(): void {
+    rv_decl_note_path_route();
+
     if (get_query_var('rv_decl_photo')) {
         rv_decl_serve_photo();
         exit;
@@ -116,8 +149,7 @@ function rv_decl_dispatch(): void {
         exit;
     }
 
-    if (get_query_var('rv_decl_admin')) {
-        rv_decl_require_manager();
+    if (get_query_var('rv_decl_admin') || rv_decl_request_path() === '/routesvivantes/admin') {
         rv_decl_render_document('admin');
     }
 

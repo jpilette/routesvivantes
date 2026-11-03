@@ -3,21 +3,21 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.12.0
+Stable tag: 1.13.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Formulaire public pour déclarer un animal mort ou blessé, et carte des signalements pour les administrateurs.
+Formulaire public pour déclarer un animal mort ou blessé, et carte publique des signalements.
 
 == Description ==
 
 Le plugin ajoute deux pages indépendantes du thème WordPress.
 
 * `/routesvivantes/` — formulaire en français facile à lire. Avant le bouton « Faire un signalement », la page dit qu’elle sert à déclarer un animal mort ou blessé, pour l’association Routes Vivantes. Un lien mène vers https://www.routesvivantes.fr/. Ensuite : l’état de l’animal. Toucher Mort ou Blessé passe à la suite, sans autre bouton. Le lieu n’est demandé qu’après, et seulement si le téléphone ne l’a pas déjà autorisé. Toucher un animal le choisit et passe à la suite. Puis : une photo obligatoire et une deuxième photo facultative (appareil photo ou image déjà sur l’appareil), mot libre. À la fin, le texte est : « L'association Routes vivantes vous remercie pour votre participation ». Un lien propose ensuite d’aller voir https://www.routesvivantes.fr/.
-* `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point, du même aspect. Un clic ouvre la fiche, où l’état mort ou blessé est écrit. Le seul filtre est une période. Cette page ne modifie pas le lieu. Elle n’a pas de lien vers l’administration WordPress.
+* `/routesvivantes/admin/` — carte de France publique (Leaflet, fond OpenStreetMap). Aucun compte n’est demandé. Chaque signalement est un point, du même aspect. Un clic ouvre la fiche, où l’état mort ou blessé est écrit. Le seul filtre est une période. Vous pouvez supprimer un signalement après confirmation. Cette page ne modifie pas le lieu et n’ouvre pas `/wp-admin/`.
 * Le déplacement d’un lieu est dans le menu **Routes Vivantes** (`wp-admin/admin.php?page=rv-decl-lieux`). Sur cet écran seulement, le lien « Administration WordPress » ouvre `/wp-admin/`. Le lien « Carte des signalements » ouvre la carte.
 
-La carte, le JSON et les photos sont réservés aux comptes qui ont la capacité `manage_options`.
+La carte, ses données et ses photos sont publiques. Le déplacement d’un lieu et l’ajout d’exemples restent réservés aux comptes `manage_options`, dans l’administration WordPress.
 
 Le code est sous GPL. Le logo de l’association Routes Vivantes reste sa marque. La police Outfit est sous SIL Open Font License (voir `assets/fonts/OFL.txt`). Leaflet 1.9.4 est sous licence BSD à 2 clauses. Plugin Update Checker 5.7 (Yahnis Elsts) est sous licence MIT, dans `plugin-update-checker/`.
 
@@ -29,7 +29,7 @@ Le code est sous GPL. Le logo de l’association Routes Vivantes reste sa marque
    L’activation crée la table `wp_rv_declarations` (le préfixe peut différer) et enregistre les adresses.
 4. Ouvrir Réglages → Permaliens. Choisir une structure autre que « Simple », puis enregistrer.
 5. Ouvrir `https://exemple.fr/routesvivantes/` pour le formulaire.
-6. Ouvrir `https://exemple.fr/routesvivantes/admin/` pour la carte. Il faut un compte administrateur.
+6. Ouvrir `https://exemple.fr/routesvivantes/admin/` pour la carte. Aucun compte n’est demandé.
 7. Pour déplacer un lieu, ouvrir le menu **Routes Vivantes** dans l’administration WordPress.
 
 La désactivation ne supprime ni la table ni les photos. Elle retire seulement les adresses du plugin.
@@ -57,12 +57,12 @@ Ne pas mettre `/routesvivantes/` en cache : la page contient un nonce.
 == Carte ==
 
 * Adresse : `/routesvivantes/admin/`
-* Données : `/routesvivantes/admin/donnees/` (JSON, même protection)
+* Données : `/routesvivantes/admin/donnees/` (JSON public)
 * Photo : `/routesvivantes/admin/photo/{id}/1/` et `/2/`
 
-Un visiteur anonyme est renvoyé vers la connexion WordPress. Un compte connecté sans `manage_options` aussi, sans revenir sur la carte (pour éviter une boucle).
+La carte ne demande pas de connexion. Elle n’envoie personne vers `wp-login.php` ni vers `/wp-admin/`.
 
-Un administrateur peut supprimer un signalement depuis sa fiche. La carte demande une confirmation. La ligne et les fichiers photo sont alors retirés. Un visiteur anonyme ne peut pas supprimer.
+Vous pouvez supprimer un signalement depuis sa fiche. La carte demande une confirmation. La ligne et les fichiers photo sont alors retirés.
 
 La carte ne sert qu’à voir les signalements et à filtrer par date. Elle ne déplace pas un lieu. Tous les points ont le même aspect. L’état, mort ou blessé, est indiqué dans la fiche.
 
@@ -88,7 +88,7 @@ Adresse du fichier :
 
 `https://raw.githubusercontent.com/jpilette/routesvivantes/cursor/routes-vivantes-declarations-e73d/routes-vivantes-declarations/update.json`
 
-Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.12.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
+Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.13.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
 
 Pour publier une version :
 
@@ -102,6 +102,10 @@ Une installation restée en 1.1.0 appelle encore l’API GitHub. Vous installez 
 La bibliothèque est chargée dans l’administration WordPress, dans WP-CLI, dans le cron, et dans la requête qui installe la mise à jour. Les pages `/routesvivantes/` et `/routesvivantes/admin/`, ainsi que l’envoi du formulaire, ne la chargent pas.
 
 == Changelog ==
+
+= 1.13.0 =
+* La carte `/routesvivantes/admin/` est publique. Elle ne demande pas de compte et n’ouvre pas l’administration WordPress.
+* Le déplacement d’un lieu et le bouton des exemples restent dans le menu Routes Vivantes, pour les administrateurs.
 
 = 1.12.0 =
 * La première page reste centrée sur « Faire un signalement », avec les couleurs du site de l’association. Un lien ouvre https://www.routesvivantes.fr/.

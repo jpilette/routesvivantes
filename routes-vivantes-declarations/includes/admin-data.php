@@ -1,6 +1,6 @@
 <?php
 /**
- * Données de la carte. Jamais accessibles sans `manage_options`.
+ * Données de la carte publique. Pas de connexion WordPress.
  *
  * Le JSON ne contient pas les chemins des fichiers.
  *
@@ -17,7 +17,6 @@ if (!defined('ABSPATH')) {
  * Une date vide veut dire « sans borne ». Les deux vides : tout.
  */
 function rv_decl_serve_json(): void {
-    rv_decl_require_manager();
 
     $from = rv_decl_read_date_param('from');
     if (is_wp_error($from)) {
@@ -51,7 +50,6 @@ function rv_decl_serve_json(): void {
  * GET /routesvivantes/admin/photo/{id}/{1|2}/
  */
 function rv_decl_serve_photo(): void {
-    rv_decl_require_manager();
 
     $id = (int) get_query_var('rv_decl_id');
     $slot = (int) get_query_var('rv_decl_slot');
@@ -234,15 +232,14 @@ function rv_decl_photo_not_found(): void {
 }
 
 /**
- * Supprime un signalement et ses photos. Réservé à manage_options.
+ * Supprime un signalement et ses photos.
+ *
+ * La carte est publique : la suppression ne demande pas de compte.
+ * Le nonce empêche seulement une page trop ancienne.
  */
 function rv_decl_handle_delete(): void {
     if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) !== 'POST') {
         rv_decl_send_error('La suppression n’a pas marché. Réessayez.', 405);
-    }
-
-    if (!is_user_logged_in() || !current_user_can('manage_options')) {
-        rv_decl_send_error('Vous ne pouvez pas supprimer ce signalement.', 403);
     }
 
     $nonce = '';

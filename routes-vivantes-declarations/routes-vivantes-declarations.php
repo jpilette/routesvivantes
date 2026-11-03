@@ -3,7 +3,7 @@
  * Plugin Name:       Routes Vivantes — Déclarations
  * Plugin URI:        https://www.routesvivantes.fr/
  * Description:       Formulaire public pour déclarer un animal mort ou blessé (/routesvivantes/), carte des signalements (/routesvivantes/admin/) et correction du lieu dans l’administration WordPress.
- * Version:           1.12.0
+ * Version:           1.13.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Routes Vivantes
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RV_DECL_VERSION', '1.12.0');
+define('RV_DECL_VERSION', '1.13.0');
 define('RV_DECL_DB_VERSION', '1');
 define('RV_DECL_FILE', __FILE__);
 define('RV_DECL_DIR', plugin_dir_path(__FILE__));
@@ -50,13 +50,16 @@ add_action('init', 'rv_decl_register_rewrites');
 add_action('init', 'rv_decl_maybe_upgrade', 99);
 add_filter('query_vars', 'rv_decl_query_vars');
 add_filter('redirect_canonical', 'rv_decl_skip_canonical');
+add_action('wp', 'rv_decl_note_path_route', -1);
 add_action('wp', 'rv_decl_hide_admin_chrome', 0);
 add_action('wp', 'rv_decl_mark_uncached');
+add_action('template_redirect', 'rv_decl_keep_map_out_of_wp_admin', 0);
 add_action('template_redirect', 'rv_decl_dispatch', 0);
 add_action('admin_notices', 'rv_decl_permalink_notice');
 add_action('wp_ajax_rv_decl_submit', 'rv_decl_handle_submit');
 add_action('wp_ajax_nopriv_rv_decl_submit', 'rv_decl_handle_submit');
 add_action('wp_ajax_rv_decl_delete', 'rv_decl_handle_delete');
+add_action('wp_ajax_nopriv_rv_decl_delete', 'rv_decl_handle_delete');
 add_action('wp_ajax_rv_decl_move', 'rv_decl_handle_move');
 
 /**
