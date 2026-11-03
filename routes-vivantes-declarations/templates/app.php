@@ -43,6 +43,8 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
 
         <main id="contenu">
             <section class="start" id="rv-start">
+                <p>Cette page sert à déclarer un animal mort ou blessé.</p>
+                <p>Le signalement est pour l’association Routes Vivantes.</p>
                 <button type="button" class="btn btn-start" id="rv-start-btn">Faire un signalement</button>
             </section>
             <div class="error" id="rv-error" role="alert" hidden></div>
@@ -53,7 +55,7 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
 
                 <section class="step" data-part="etat" data-step="1" aria-labelledby="rv-title-1">
                     <h2 id="rv-title-1" tabindex="-1">L’animal est comment ?</h2>
-                    <p>Choisissez une seule réponse.</p>
+                    <p>Touchez Mort ou Blessé. Vous passez à la suite.</p>
                     <div class="choices-stack">
                         <label class="choice">
                             <input type="radio" name="status" value="mort">
@@ -65,9 +67,6 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                             <span class="choice-title">Blessé</span>
                             <span class="hint">Il est vivant.</span>
                         </label>
-                    </div>
-                    <div class="actions">
-                        <button type="button" class="btn" data-next>Continuer</button>
                     </div>
                 </section>
 
@@ -99,7 +98,7 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
 
                 <section class="step" data-part="animal" data-step="3" hidden aria-labelledby="rv-title-3">
                     <h2 id="rv-title-3" tabindex="-1">Quel animal ?</h2>
-                    <p>Choisissez un seul animal.</p>
+                    <p>Touchez un animal. Vous passez à la suite.</p>
                     <div class="animals">
                         <?php foreach ($rv_animals as $rv_key => $rv_animal) : ?>
                             <label class="choice">
@@ -110,7 +109,6 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                         <?php endforeach; ?>
                     </div>
                     <div class="actions">
-                        <button type="button" class="btn" data-next>Continuer</button>
                         <button type="button" class="btn btn-ghost" data-back>Retour</button>
                     </div>
                 </section>
@@ -188,10 +186,7 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                         <path d="M20 38 l10 10 22-24" fill="none" stroke="#1E4D37" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                 </div>
-                <h2 id="rv-success-title" tabindex="-1">Merci.</h2>
-                <p>C’est bien envoyé.</p>
-                <p>Votre signalement est enregistré.</p>
-                <p>Vous pouvez fermer la page.</p>
+                <h2 id="rv-success-title" tabindex="-1">L'association Routes vivantes vous remercie pour votre participation</h2>
                 <button type="button" class="btn" id="rv-again">Faire un autre signalement</button>
             </section>
         </main>

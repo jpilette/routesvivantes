@@ -367,10 +367,16 @@
         return true;
     }
 
+    var advancingChoice = false;
+
     function continueFromEtat() {
+        if (advancingChoice) {
+            return;
+        }
         if (!validate(currentStep())) {
             return;
         }
+        advancingChoice = true;
         var nextButton = currentStep().querySelector('[data-next]');
         if (nextButton) {
             nextButton.disabled = true;
@@ -378,6 +384,10 @@
         ensurePermission().then(function () {
             if (nextButton) {
                 nextButton.disabled = false;
+            }
+            advancingChoice = false;
+            if (currentPart() !== 'etat') {
+                return;
             }
             if (shouldShowGeoStep()) {
                 if (permissionState === 'denied') {
@@ -387,12 +397,53 @@
                 return;
             }
             goToPart('animal');
+        }).catch(function () {
+            advancingChoice = false;
+            if (nextButton) {
+                nextButton.disabled = false;
+            }
         });
     }
+
+    function continueFromAnimal() {
+        if (advancingChoice || currentPart() !== 'animal') {
+            return;
+        }
+        if (!validate(currentStep())) {
+            return;
+        }
+        go(cursor + 1);
+    }
+
+    form.addEventListener('change', function (event) {
+        var input = event.target;
+        if (!input || input.type !== 'radio') {
+            return;
+        }
+        if (input.name === 'status' && currentPart() === 'etat') {
+            continueFromEtat();
+        } else if (input.name === 'animal_type') {
+            continueFromAnimal();
+        }
+    });
 
     form.addEventListener('click', function (event) {
         if (!event.target.closest) {
             return;
+        }
+        var choice = event.target.closest('.choice');
+        if (choice) {
+            var input = choice.querySelector('input[type="radio"]');
+            if (input && input.name === 'status' && currentPart() === 'etat') {
+                input.checked = true;
+                continueFromEtat();
+                return;
+            }
+            if (input && input.name === 'animal_type' && currentPart() === 'animal') {
+                input.checked = true;
+                continueFromAnimal();
+                return;
+            }
         }
         var next = event.target.closest('[data-next]');
         var back = event.target.closest('[data-back]');

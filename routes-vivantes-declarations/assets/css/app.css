@@ -41,9 +41,18 @@ body.page-form {
 
 .start {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
     min-height: calc(100dvh - 168px);
     padding: 24px 20px 48px;
+}
+
+.start p {
+    margin: 0;
+    max-width: 28rem;
+    font-size: 1.35rem;
+    line-height: 1.45;
 }
 
 .btn-start {
