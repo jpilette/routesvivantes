@@ -43,9 +43,12 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
 
         <main id="contenu">
             <section class="start" id="rv-start">
-                <p>Cette page sert à déclarer un animal mort ou blessé.</p>
-                <p>Le signalement est pour l’association Routes Vivantes.</p>
-                <button type="button" class="btn btn-start" id="rv-start-btn">Faire un signalement</button>
+                <div class="start-card">
+                    <p class="start-lead">Cette page sert à déclarer un animal mort ou blessé.</p>
+                    <p>Le signalement est pour l’association Routes Vivantes.</p>
+                    <button type="button" class="btn btn-start" id="rv-start-btn">Faire un signalement</button>
+                    <a class="site-link" href="https://www.routesvivantes.fr/" target="_blank" rel="noopener noreferrer">Voir le site de l’association<span class="visually-hidden">. Le lien s’ouvre dans un nouvel onglet.</span></a>
+                </div>
             </section>
             <div class="error" id="rv-error" role="alert" hidden></div>
             <form id="rv-form" autocomplete="off" novalidate hidden>
@@ -187,7 +190,8 @@ $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
                     </svg>
                 </div>
                 <h2 id="rv-success-title" tabindex="-1">L'association Routes vivantes vous remercie pour votre participation</h2>
-                <button type="button" class="btn" id="rv-again">Faire un autre signalement</button>
+                <a class="btn btn-site" href="https://www.routesvivantes.fr/" target="_blank" rel="noopener noreferrer">Voir le site de l’association<span class="visually-hidden">. Le lien s’ouvre dans un nouvel onglet.</span></a>
+                <button type="button" class="btn btn-ghost" id="rv-again">Faire un autre signalement</button>
             </section>
         </main>
 

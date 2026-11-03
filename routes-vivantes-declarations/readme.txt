@@ -3,7 +3,7 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.11.0
+Stable tag: 1.12.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ Formulaire public pour déclarer un animal mort ou blessé, et carte des signale
 
 Le plugin ajoute deux pages indépendantes du thème WordPress.
 
-* `/routesvivantes/` — formulaire en français facile à lire. Avant le bouton « Faire un signalement », la page dit qu’elle sert à déclarer un animal mort ou blessé, pour l’association Routes Vivantes. Ensuite : l’état de l’animal. Toucher Mort ou Blessé passe à la suite, sans autre bouton. Le lieu n’est demandé qu’après, et seulement si le téléphone ne l’a pas déjà autorisé. Toucher un animal le choisit et passe à la suite. Puis : une photo obligatoire et une deuxième photo facultative (appareil photo ou image déjà sur l’appareil), mot libre. À la fin, le texte est : « L'association Routes vivantes vous remercie pour votre participation ».
+* `/routesvivantes/` — formulaire en français facile à lire. Avant le bouton « Faire un signalement », la page dit qu’elle sert à déclarer un animal mort ou blessé, pour l’association Routes Vivantes. Un lien mène vers https://www.routesvivantes.fr/. Ensuite : l’état de l’animal. Toucher Mort ou Blessé passe à la suite, sans autre bouton. Le lieu n’est demandé qu’après, et seulement si le téléphone ne l’a pas déjà autorisé. Toucher un animal le choisit et passe à la suite. Puis : une photo obligatoire et une deuxième photo facultative (appareil photo ou image déjà sur l’appareil), mot libre. À la fin, le texte est : « L'association Routes vivantes vous remercie pour votre participation ». Un lien propose ensuite d’aller voir https://www.routesvivantes.fr/.
 * `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point, du même aspect. Un clic ouvre la fiche, où l’état mort ou blessé est écrit. Le seul filtre est une période. Cette page ne modifie pas le lieu. Elle n’a pas de lien vers l’administration WordPress.
 * Le déplacement d’un lieu est dans le menu **Routes Vivantes** (`wp-admin/admin.php?page=rv-decl-lieux`). Sur cet écran seulement, le lien « Administration WordPress » ouvre `/wp-admin/`. Le lien « Carte des signalements » ouvre la carte.
 
@@ -36,7 +36,7 @@ La désactivation ne supprime ni la table ni les photos. Elle retire seulement l
 
 == Formulaire public ==
 
-Le visiteur n’a pas besoin de compte. Avant le bouton « Faire un signalement », la page explique qu’elle sert à déclarer un animal mort ou blessé, pour l’association Routes Vivantes. Ce bouton lance le signalement. La première question est : l’animal est mort ou blessé. Toucher Mort ou Blessé choisit la réponse et passe à la suite. Le lieu n’est pas demandé au départ. Il est lu tout de suite si le téléphone l’autorise déjà. Sinon, une question simple demande de l’autoriser. L’envoi reste bloqué tant que la position manque. Toucher un animal le choisit et passe à la suite, sans bouton Continuer. À la fin, la page affiche : « L'association Routes vivantes vous remercie pour votre participation ».
+Le visiteur n’a pas besoin de compte. Avant le bouton « Faire un signalement », la page explique qu’elle sert à déclarer un animal mort ou blessé, pour l’association Routes Vivantes. Ce bouton lance le signalement. La première question est : l’animal est mort ou blessé. Toucher Mort ou Blessé choisit la réponse et passe à la suite. Le lieu n’est pas demandé au départ. Il est lu tout de suite si le téléphone l’autorise déjà. Sinon, une question simple demande de l’autoriser. L’envoi reste bloqué tant que la position manque. Toucher un animal le choisit et passe à la suite, sans bouton Continuer. À la fin, la page affiche : « L'association Routes vivantes vous remercie pour votre participation ». Un lien propose d’aller voir le site de l’association.
 
 L’envoi vérifie un nonce, la taille des photos (8 Mo chacune) et un plafond de 8 signalements par heure et par adresse IP. L’adresse IP n’est pas enregistrée : seul un compteur temporaire est utilisé.
 
@@ -88,7 +88,7 @@ Adresse du fichier :
 
 `https://raw.githubusercontent.com/jpilette/routesvivantes/cursor/routes-vivantes-declarations-e73d/routes-vivantes-declarations/update.json`
 
-Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.11.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
+Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.12.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
 
 Pour publier une version :
 
@@ -102,6 +102,10 @@ Une installation restée en 1.1.0 appelle encore l’API GitHub. Vous installez 
 La bibliothèque est chargée dans l’administration WordPress, dans WP-CLI, dans le cron, et dans la requête qui installe la mise à jour. Les pages `/routesvivantes/` et `/routesvivantes/admin/`, ainsi que l’envoi du formulaire, ne la chargent pas.
 
 == Changelog ==
+
+= 1.12.0 =
+* La première page reste centrée sur « Faire un signalement », avec les couleurs du site de l’association. Un lien ouvre https://www.routesvivantes.fr/.
+* Après le remerciement, un lien propose d’aller voir le site de l’association.
 
 = 1.11.0 =
 * La carte `/routesvivantes/admin/` n’a plus de lien vers l’administration WordPress.
