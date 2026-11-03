@@ -69,6 +69,31 @@ body.page-map {
     font-weight: 700;
 }
 
+.switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 4px 20px 12px;
+}
+
+.switch a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 8px 16px;
+    border: 2px solid var(--forest);
+    border-radius: 999px;
+    background: var(--white);
+    color: var(--forest);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.switch a[aria-current="page"] {
+    background: var(--forest);
+    color: var(--cream);
+}
+
 #rv-map {
     height: 62dvh;
     min-height: 320px;

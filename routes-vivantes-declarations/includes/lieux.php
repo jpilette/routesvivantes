@@ -91,6 +91,11 @@ function rv_decl_render_lieux_screen(): void {
             </div>
         <?php endif; ?>
         <p>Choisissez un signalement. Déplacez le point sur la carte, puis enregistrez le lieu.</p>
+        <nav class="rv-switch" aria-label="Les deux administrations">
+            <a class="button" href="<?php echo esc_url(admin_url()); ?>">Administration WordPress</a>
+            <a class="button" href="<?php echo esc_url(home_url('/routesvivantes/admin/')); ?>">Carte des signalements</a>
+        </nav>
+        <p>L’administration WordPress ouvre le tableau de bord. La carte des signalements sert à voir les points, filtrer les dates, lire la fiche et supprimer. Le déplacement d’un lieu reste sur cet écran, dans le menu Routes Vivantes.</p>
         <section class="rv-examples" aria-labelledby="rv-examples-title">
             <h2 id="rv-examples-title">Signalements d’exemple</h2>
             <p>Ce bouton ajoute 100 signalements d’exemple, répartis en France, avec des photos créées pour l’essai. Il ne s’exécute que lorsque vous le demandez. Il ne retire pas les signalements déjà enregistrés. Vous pouvez le refaire : cela ajoute encore des exemples.</p>

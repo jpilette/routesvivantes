@@ -3,7 +3,7 @@ Contributors: routesvivantes
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.9.0
+Stable tag: 1.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,8 +14,8 @@ Formulaire public pour déclarer un animal mort ou blessé, et carte des signale
 Le plugin ajoute deux pages indépendantes du thème WordPress.
 
 * `/routesvivantes/` — formulaire en français facile à lire. Il s’ouvre sur le bouton « Faire un signalement ». Ensuite : l’état de l’animal. Le lieu n’est demandé qu’après ce bouton, et seulement si le téléphone ne l’a pas déjà autorisé. Puis : type d’animal, une photo obligatoire et une deuxième photo facultative (appareil photo ou image déjà sur l’appareil), mot libre.
-* `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point, du même aspect. Un clic ouvre la fiche, où l’état mort ou blessé est écrit. Le seul filtre est une période. Cette page ne modifie pas le lieu.
-* Administration WordPress, menu **Routes Vivantes** (`wp-admin/admin.php?page=rv-decl-lieux`) — liste des signalements. Vous y déplacez le lieu d’un signalement, puis vous l’enregistrez.
+* `/routesvivantes/admin/` — carte de France (Leaflet, fond OpenStreetMap). Chaque signalement est un point, du même aspect. Un clic ouvre la fiche, où l’état mort ou blessé est écrit. Le seul filtre est une période. Cette page ne modifie pas le lieu. Le lien « Carte des signalements » ouvre cette adresse.
+* `/wp-admin/` — administration WordPress classique. Le lien « Administration WordPress » ouvre cette adresse, pas la carte. Le déplacement d’un lieu est ensuite dans le menu **Routes Vivantes** (`wp-admin/admin.php?page=rv-decl-lieux`).
 
 La carte, le JSON et les photos sont réservés aux comptes qui ont la capacité `manage_options`.
 
@@ -88,7 +88,7 @@ Adresse du fichier :
 
 `https://raw.githubusercontent.com/jpilette/routesvivantes/cursor/routes-vivantes-declarations-e73d/routes-vivantes-declarations/update.json`
 
-Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.9.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
+Ce fichier donne le numéro de version et l’adresse du zip. Le zip est celui de la release GitHub, par exemple `https://github.com/jpilette/routesvivantes/releases/download/v1.10.0/routes-vivantes-declarations.zip`. Il contient seulement le dossier du plugin.
 
 Pour publier une version :
 
@@ -102,6 +102,9 @@ Une installation restée en 1.1.0 appelle encore l’API GitHub. Vous installez 
 La bibliothèque est chargée dans l’administration WordPress, dans WP-CLI, dans le cron, et dans la requête qui installe la mise à jour. Les pages `/routesvivantes/` et `/routesvivantes/admin/`, ainsi que l’envoi du formulaire, ne la chargent pas.
 
 == Changelog ==
+
+= 1.10.0 =
+* Le lien « Administration WordPress » ouvre `/wp-admin/`. Le lien « Carte des signalements » ouvre `/routesvivantes/admin/`. Le déplacement d’un lieu reste dans le menu Routes Vivantes.
 
 = 1.9.0 =
 * Sur la carte, tous les signalements ont le même point. Mort ou blessé reste écrit dans la fiche.

@@ -11,6 +11,8 @@ if (!defined('ABSPATH')) {
 
 $rv_logo = RV_DECL_URL . 'assets/img/logo.png';
 $rv_json = home_url('/routesvivantes/admin/donnees/');
+$rv_wp_admin = admin_url();
+$rv_map = home_url('/routesvivantes/admin/');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -57,7 +59,11 @@ $rv_json = home_url('/routesvivantes/admin/donnees/');
             Chaque point est un signalement. Mort ou blessé est indiqué dans la fiche.
         </p>
         <p class="count" id="rv-count" role="status">Chargement des signalements.</p>
-        <p class="legend">Pour déplacer un lieu, ouvrez le menu Routes Vivantes dans l’administration WordPress.</p>
+        <nav class="switch" aria-label="Les deux administrations">
+            <a href="<?php echo esc_url($rv_wp_admin); ?>">Administration WordPress</a>
+            <a href="<?php echo esc_url($rv_map); ?>" aria-current="page">Carte des signalements</a>
+        </nav>
+        <p class="legend">Pour déplacer un lieu, ouvrez l’administration WordPress, puis le menu Routes Vivantes.</p>
         <div id="rv-map" role="region" aria-label="Carte de France des signalements"></div>
     </main>
 
